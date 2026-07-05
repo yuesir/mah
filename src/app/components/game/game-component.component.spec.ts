@@ -55,7 +55,7 @@ describe('GameComponent', () => {
 
 	it('should initialize with correct values', () => {
 		expect(component.game).toBe(appService.game);
-		expect(component.title).toBe(`${appService.name} v${environment.version}`);
+		expect(component.title).toBe(appService.name);
 	});
 
 	it('should handle key events', () => {

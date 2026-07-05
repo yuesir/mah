@@ -9,7 +9,7 @@
 	}
 </app-dialog>
 
-<app-dialog #help (clickEvent)="toggleDialogState($event)" className="overlay-help overlay-size-large" [title]="title">
+<app-dialog #help (clickEvent)="toggleDialogState($event)" className="overlay-help overlay-size-auto" [title]="title">
 	@if (help.visible()) {
 		<app-help (showTutorial)="help.toggle(); showTutorial()"/>
 	}

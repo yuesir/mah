@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mah 图片转关卡工具</title>
+<style>
+	:root {
+		--bg: #1e2d35;
+		--panel: #2a3b46;
+		--panel-2: #405765;
+		--border: #5a7b8b;
+		--text: #e8eef2;
+		--text-dim: #9fb3bd;
+		--accent: #47b00a;
+		--accent-2: #5a9bff;
+		--warn: #ff5900;
+		--err: #d15a5a;
+		--ok: #47b00a;
+	}
+	* { box-sizing: border-box; }
+	body {
+		margin: 0;
+		font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+		background: var(--bg);
+		color: var(--text);
+		min-height: 100vh;
+		padding: 20px;
+	}
+	h1 {
+		margin: 0 0 4px;
+		font-size: 1.4em;
+	}
+	h1 .sub {
+		font-size: 0.6em;
+		color: var(--text-dim);
+		font-weight: normal;
+		margin-left: 8px;
+	}
+	.intro {
+		color: var(--text-dim);
+		font-size: 0.88em;
+		margin: 0 0 18px;
+		max-width: 1100px;
+		line-height: 1.5;
+	}
+	.intro code {
+		background: var(--panel);
+		padding: 1px 5px;
+		border-radius: 3px;
+		color: var(--accent);
+	}
+	.layout {
+		display: grid;
+		grid-template-columns: 320px 1fr;
+		gap: 18px;
+		max-width: 1400px;
+	}
+	@media (max-width: 900px) {
+		.layout { grid-template-columns: 1fr; }
+	}
+	.panel {
+		background: var(--panel);
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		padding: 16px;
+	}
+	.panel h2 {
+		margin: 0 0 12px;
+		font-size: 1.02em;
+		color: var(--accent);
+		border-bottom: 1px solid var(--panel-2);
+		padding-bottom: 8px;
+	}
+	.drop-zone {
+		border: 2px dashed var(--border);
+		border-radius: 8px;
+		padding: 24px 12px;
+		text-align: center;
+		cursor: pointer;
+		transition: all 0.15s;
+		color: var(--text-dim);
+		font-size: 0.9em;
+		margin-bottom: 10px;
+	}
+	.drop-zone:hover, .drop-zone.dragover {
+		border-color: var(--accent);
+		background: rgba(71, 176, 10, 0.08);
+		color: var(--text);
+	}
+	.drop-zone input { display: none; }
+	fieldset {
+		border: 1px solid var(--panel-2);
+		border-radius: 6px;
+		margin: 0 0 12px;
+		padding: 8px 12px 12px;
+	}
+	fieldset legend {
+		font-size: 0.82em;
+		color: var(--text-dim);
+		padding: 0 6px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.control {
+		margin-bottom: 12px;
+	}
+	.control:last-child { margin-bottom: 0; }
+	.control label {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 0.86em;
+		margin-bottom: 4px;
+		color: var(--text-dim);
+	}
+	.control label .val {
+		color: var(--text);
+		font-weight: bold;
+		font-variant-numeric: tabular-nums;
+	}
+	.control input[type="range"] {
+		width: 100%;
+		accent-color: var(--accent);
+	}
+	.control input[type="number"], .control input[type="text"], .control select {
+		width: 100%;
+		background: var(--bg);
+		border: 1px solid var(--panel-2);
+		color: var(--text);
+		padding: 6px 8px;
+		border-radius: 4px;
+		font-size: 0.9em;
+		font-family: inherit;
+	}
+	.control input[type="number"]:focus, .control input[type="text"]:focus {
+		border-color: var(--accent);
+		outline: none;
+	}
+	.seg {
+		display: flex;
+		gap: 6px;
+	}
+	.seg button {
+		flex: 1;
+		padding: 7px 4px;
+		background: var(--bg);
+		border: 1px solid var(--panel-2);
+		color: var(--text-dim);
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 0.82em;
+		font-family: inherit;
+		transition: all 0.1s;
+	}
+	.seg button.active {
+		background: var(--accent);
+		color: #fff;
+		border-color: var(--accent);
+	}
+	.seg button:hover:not(.active) {
+		border-color: var(--accent);
+		color: var(--text);
+	}
+	.stats {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+		margin-bottom: 12px;
+	}
+	.stat {
+		background: var(--bg);
+		border-radius: 6px;
+		padding: 8px 10px;
+	}
+	.stat .k {
+		font-size: 0.72em;
+		color: var(--text-dim);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.stat .v {
+		font-size: 1.25em;
+		font-weight: bold;
+		font-variant-numeric: tabular-nums;
+	}
+	.stat .v.invalid { color: var(--err); }
+	.stat .v.warn { color: var(--warn); }
+	.stat .v.ok { color: var(--ok); }
+	.hint {
+		font-size: 0.78em;
+		color: var(--text-dim);
+		margin-top: -6px;
+		margin-bottom: 12px;
+		line-height: 1.4;
+	}
+	.btn-primary {
+		display: block;
+		width: 100%;
+		padding: 12px;
+		background: var(--accent);
+		color: #fff;
+		border: none;
+		border-radius: 8px;
+		font-size: 1em;
+		font-weight: bold;
+		cursor: pointer;
+		font-family: inherit;
+		transition: all 0.1s;
+	}
+	.btn-primary:hover { background: #5bc70f; }
+	.btn-primary:disabled {
+		background: var(--panel-2);
+		color: var(--text-dim);
+		cursor: not-allowed;
+	}
+	.preview-wrap {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 18px;
+	}
+	@media (max-width: 700px) {
+		.preview-wrap { grid-template-columns: 1fr; }
+	}
+	.preview-card {
+		background: var(--panel);
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		padding: 14px;
+	}
+	.preview-card h3 {
+		margin: 0 0 4px;
+		font-size: 0.92em;
+		color: var(--accent-2);
+	}
+	.preview-card .desc {
+		font-size: 0.76em;
+		color: var(--text-dim);
+		margin: 0 0 10px;
+	}
+	.preview-card canvas {
+		display: block;
+		width: 100%;
+		height: auto;
+		background: #0a1419;
+		border-radius: 6px;
+		image-rendering: pixelated;
+	}
+	.preview-card .empty {
+		color: var(--text-dim);
+		font-size: 0.85em;
+		text-align: center;
+		padding: 60px 0;
+	}
+	.badge {
+		display: inline-block;
+		padding: 1px 7px;
+		border-radius: 10px;
+		font-size: 0.72em;
+		font-weight: bold;
+		margin-left: 6px;
+	}
+	.badge.ok { background: rgba(71,176,10,0.2); color: var(--ok); }
+	.badge.warn { background: rgba(255,89,0,0.2); color: var(--warn); }
+	.badge.err { background: rgba(209,90,90,0.2); color: var(--err); }
+</style>
+</head>
+<body>
+	<h1>Mah 图片转关卡 <span class="sub">PNG alpha → .mah 布局文件</span></h1>
+	<p class="intro">
+		拖入一张图片，自动按 alpha 透明通道抠出前景轮廓，映射成单层关卡。下载 <code>.mah</code> 文件后拖进 Mah 编辑器的 Import 区域即可载入。
+		<strong>注意：</strong>图片转换出来是单层（z=0），几乎一定 <code>Solved: 0</code>，导入后需用编辑器复制层 + 删外圈造阶梯，或开始游戏时选 Solvable 生成器。
+	</p>
+
+	<div class="layout">
+		<!-- 左侧控制面板 -->
+		<div class="panel">
+			<h2>1. 选择图片</h2>
+			<label class="drop-zone" id="dropZone">
+				<span id="dropText">点击或拖拽 PNG / 图片到此</span>
+				<input type="file" id="fileInput" accept="image/*">
+			</label>
+
+			<h2 style="margin-top:16px">2. 参数</h2>
+			<fieldset>
+				<legend>判定方式</legend>
+				<div class="seg" id="modeSeg">
+					<button data-mode="alpha" class="active">Alpha 通道</button>
+					<button data-mode="luma">亮度阈值</button>
+				</div>
+				<div class="control" id="threshCtrl" style="margin-top:10px">
+					<label>亮度阈值 <span class="val" id="threshVal">128</span></label>
+					<input type="range" id="thresh" min="1" max="254" value="128">
+					<div class="hint">像素亮度 ≥ 此值视为前景（仅"亮度阈值"模式生效）</div>
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<legend>网格尺寸</legend>
+				<div class="control">
+					<label>宽度（列 x） <span class="val" id="colsVal">30</span></label>
+					<input type="range" id="cols" min="8" max="56" value="30">
+				</div>
+				<div class="control">
+					<label>高度（行 y） <span class="val" id="rowsVal">16</span></label>
+					<input type="range" id="rows" min="8" max="36" value="16">
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<legend>后处理</legend>
+				<div class="control">
+					<label>边缘裁剪 <span class="val" id="padVal">0</span></label>
+					<input type="range" id="pad" min="0" max="5" value="0">
+					<div class="hint">裁掉外圈 N 格空白边缘</div>
+				</div>
+				<div class="seg" id="evenSeg">
+					<button data-even="trim" class="active">裁剪凑偶</button>
+					<button data-even="pad">补角凑偶</button>
+				</div>
+				<div class="hint">牌数为奇数时：删最边缘一格，或在右下角补一格</div>
+			</fieldset>
+
+			<fieldset>
+				<legend>关卡信息</legend>
+				<div class="control">
+					<label>名称</label>
+					<input type="text" id="boardName" value="From Image" placeholder="关卡名">
+				</div>
+				<div class="control">
+					<label>分类</label>
+					<input type="text" id="boardCat" value="Custom" placeholder="分类">
+				</div>
+				<div class="control">
+					<label>作者</label>
+					<input type="text" id="boardBy" value="" placeholder="可选">
+				</div>
+			</fieldset>
+
+			<h2 style="margin-top:16px">3. 统计 &amp; 导出</h2>
+			<div class="stats">
+				<div class="stat">
+					<div class="k">牌数</div>
+					<div class="v" id="statCount">—</div>
+				</div>
+				<div class="stat">
+					<div class="k">是否偶数</div>
+					<div class="v" id="statEven">—</div>
+				</div>
+			</div>
+			<button class="btn-primary" id="downloadBtn" disabled>下载 .mah 文件</button>
+		</div>
+
+		<!-- 右侧预览 -->
+		<div class="preview-wrap">
+			<div class="preview-card">
+				<h3>原始图片</h3>
+				<p class="desc">缩放显示用于参考</p>
+				<canvas id="srcCanvas" width="400" height="240"></canvas>
+				<div class="empty" id="srcEmpty">尚未选择图片</div>
+			</div>
+			<div class="preview-card">
+				<h3>关卡网格预览 <span id="gridBadge"></span></h3>
+				<p class="desc">绿格 = 有牌位，深色 = 空。麻将牌 2×2 占位已按倍率放大显示。</p>
+				<canvas id="gridCanvas" width="400" height="240"></canvas>
+				<div class="empty" id="gridEmpty">尚未选择图片</div>
+			</div>
+		</div>
+	</div>
+
+<script>
+(function () {
+	"use strict";
+
+	// ---------- 状态 ----------
+	const state = {
+		img: null,           // Image 对象
+		mode: "alpha",       // "alpha" | "luma"
+		thresh: 128,
+		cols: 30,
+		rows: 16,
+		pad: 0,
+		evenMode: "trim",    // "trim" | "pad"
+		cells: null,         // 二维数组 rows×cols，1 = 前景，0 = 背景
+	};
+
+	// ---------- DOM ----------
+	const $ = (id) => document.getElementById(id);
+	const dropZone = $("dropZone");
+	const dropText = $("dropText");
+	const fileInput = $("fileInput");
+	const modeSeg = $("modeSeg");
+	const threshCtrl = $("threshCtrl");
+	const thresh = $("thresh");
+	const threshVal = $("threshVal");
+	const cols = $("cols");
+	const colsVal = $("colsVal");
+	const rows = $("rows");
+	const rowsVal = $("rowsVal");
+	const pad = $("pad");
+	const padVal = $("padVal");
+	const evenSeg = $("evenSeg");
+	const boardName = $("boardName");
+	const boardCat = $("boardCat");
+	const boardBy = $("boardBy");
+	const statCount = $("statCount");
+	const statEven = $("statEven");
+	const downloadBtn = $("downloadBtn");
+	const srcCanvas = $("srcCanvas");
+	const srcEmpty = $("srcEmpty");
+	const gridCanvas = $("gridCanvas");
+	const gridEmpty = $("gridEmpty");
+	const gridBadge = $("gridBadge");
+
+	// ---------- 工具 ----------
+	function setModeUI() {
+		threshCtrl.style.display = state.mode === "luma" ? "block" : "none";
+		[...modeSeg.children].forEach((b) => {
+			b.classList.toggle("active", b.dataset.mode === state.mode);
+		});
+	}
+
+	function readImage(file) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => {
+				const img = new Image();
+				img.onload = () => resolve(img);
+				img.onerror = () => reject(new Error("图片解析失败"));
+				img.src = reader.result;
+			};
+			reader.onerror = () => reject(new Error("文件读取失败"));
+			reader.readAsDataURL(file);
+		});
+	}
+
+	// 把图片绘制到指定 cols×rows 的低分辨率 canvas，返回 ImageData
+	function sampleToGrid(img, colsN, rowsN) {
+		const c = document.createElement("canvas");
+		c.width = colsN;
+		c.height = rowsN;
+		const ctx = c.getContext("2d", { willReadFrequently: true });
+		ctx.imageSmoothingEnabled = true;
+		ctx.imageSmoothingQuality = "high";
+		// 保持图片比例，contain 进网格，空白处为透明
+		ctx.clearRect(0, 0, colsN, rowsN);
+		const imgRatio = img.width / img.height;
+		const gridRatio = colsN / rowsN;
+		let dw, dh, dx, dy;
+		if (imgRatio > gridRatio) {
+			dw = colsN;
+			dh = colsN / imgRatio;
+			dx = 0;
+			dy = (rowsN - dh) / 2;
+		} else {
+			dh = rowsN;
+			dw = rowsN * imgRatio;
+			dy = 0;
+			dx = (colsN - dw) / 2;
+		}
+		ctx.drawImage(img, dx, dy, dw, dh);
+		return ctx.getImageData(0, 0, colsN, rowsN);
+	}
+
+	// 根据 ImageData 生成 cells（rows×cols 的 0/1 矩阵）
+	function imageDataToCells(imgData, colsN, rowsN, mode, threshold) {
+		const { data } = imgData;
+		const cells = [];
+		for (let y = 0; y < rowsN; y++) {
+			const row = new Array(colsN).fill(0);
+			for (let x = 0; x < colsN; x++) {
+				const i = (y * colsN + x) * 4;
+				const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
+				let isFg = false;
+				if (mode === "alpha") {
+					isFg = a > 16; // alpha 大于阈值即前景
+				} else {
+					// luma：亮度 ≥ 阈值 且 非全透明
+					const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+					isFg = a > 16 && luma >= threshold;
+				}
+				row[x] = isFg ? 1 : 0;
+			}
+			cells.push(row);
+		}
+		return cells;
+	}
+
+	// 裁掉四周空白边缘（按 pad 格）
+	function cropPadding(cells, colsN, rowsN, padN) {
+		if (padN <= 0) return { cells, colsN, rowsN };
+		// 先找前景真实边界
+		let minX = colsN, maxX = -1, minY = rowsN, maxY = -1;
+		for (let y = 0; y < rowsN; y++) {
+			for (let x = 0; x < colsN; x++) {
+				if (cells[y][x]) {
+					if (x < minX) minX = x;
+					if (x > maxX) maxX = x;
+					if (y < minY) minY = y;
+					if (y > maxY) maxY = y;
+				}
+			}
+		}
+		if (maxX < 0) return { cells, colsN, rowsN };
+		const nMinX = Math.max(0, minX - padN);
+		const nMaxX = Math.min(colsN - 1, maxX + padN);
+		const nMinY = Math.max(0, minY - padN);
+		const nMaxY = Math.min(rowsN - 1, maxY + padN);
+		const nCols = nMaxX - nMinX + 1;
+		const nRows = nMaxY - nMinY + 1;
+		const out = [];
+		for (let y = nMinY; y <= nMaxY; y++) {
+			out.push(cells[y].slice(nMinX, nMaxX + 1));
+		}
+		return { cells: out, colsN: nCols, rowsN: nRows };
+	}
+
+	// 凑偶数
+	function makeEven(cells, colsN, rowsN, mode) {
+		// 统计
+		let count = 0;
+		const positions = [];
+		for (let y = 0; y < rowsN; y++) {
+			for (let x = 0; x < colsN; x++) {
+				if (cells[y][x]) {
+					count++;
+					positions.push([x, y]);
+				}
+			}
+		}
+		if (count % 2 === 0) return { cells, colsN, rowsN, count };
+
+		if (mode === "trim") {
+			// 删掉最边缘的一个前景格（找最大 y，再最大 x）
+			let target = positions[0];
+			for (const p of positions) {
+				if (p[1] > target[1] || (p[1] === target[1] && p[0] > target[0])) {
+					target = p;
+				}
+			}
+			cells[target[1]][target[0]] = 0;
+		} else {
+			// pad：在右下角找一个空白格补上；找不到则扩一列
+			let placed = false;
+			// 优先在最后一行的最右空白
+			for (let y = rowsN - 1; y >= 0 && !placed; y--) {
+				for (let x = colsN - 1; x >= 0 && !placed; x--) {
+					if (!cells[y][x]) {
+						cells[y][x] = 1;
+						placed = true;
+					}
+				}
+			}
+			if (!placed) {
+				// 整盘全满，扩一列在最上行补一格
+				for (const row of cells) row.push(0);
+				cells[0][colsN] = 1;
+				colsN += 1;
+			}
+		}
+		count = count % 2 === 0 ? count : count + (mode === "trim" ? -1 : 1);
+		return { cells, colsN, rowsN, count };
+	}
+
+	// ---------- 生成 cells ----------
+	function generate() {
+		if (!state.img) return;
+		const imgData = sampleToGrid(state.img, state.cols, state.rows);
+		let cells = imageDataToCells(imgData, state.cols, state.rows, state.mode, state.thresh);
+		let colsN = state.cols;
+		let rowsN = state.rows;
+
+		// 裁边
+		const r1 = cropPadding(cells, colsN, rowsN, state.pad);
+		cells = r1.cells; colsN = r1.colsN; rowsN = r1.rowsN;
+
+		// 凑偶
+		const r2 = makeEven(cells, colsN, rowsN, state.evenMode);
+		cells = r2.cells; colsN = r2.colsN; rowsN = r2.rowsN;
+
+		state.cells = cells;
+		state.gridCols = colsN;
+		state.gridRows = rowsN;
+
+		// 统计
+		let count = 0;
+		for (const row of cells) for (const v of row) if (v) count++;
+		renderStats(count);
+		renderGrid(cells, colsN, rowsN);
+	}
+
+	// ---------- 渲染 ----------
+	function renderSrc() {
+		const img = state.img;
+		if (!img) {
+			srcCanvas.style.display = "none";
+			srcEmpty.style.display = "block";
+			return;
+		}
+		srcEmpty.style.display = "none";
+		srcCanvas.style.display = "block";
+		// 缩放绘制到 canvas（最大 400×240）
+		const maxW = 400, maxH = 240;
+		const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+		const w = Math.max(1, Math.round(img.width * ratio));
+		const h = Math.max(1, Math.round(img.height * ratio));
+		srcCanvas.width = w;
+		srcCanvas.height = h;
+		const ctx = srcCanvas.getContext("2d");
+		ctx.clearRect(0, 0, w, h);
+		ctx.drawImage(img, 0, 0, w, h);
+	}
+
+	function renderGrid(cells, colsN, rowsN) {
+		if (!cells) {
+			gridCanvas.style.display = "none";
+			gridEmpty.style.display = "block";
+			gridEmpty.textContent = "尚未选择图片";
+			return;
+		}
+		gridEmpty.style.display = "none";
+		gridCanvas.style.display = "block";
+		// 棋盘尺寸：每格 12px，2×2 占位 → 实际用 (cols*2+1)×(rows*2+1)
+		const cell = 12;
+		const tile = cell; // 单格在预览里的尺寸
+		const w = colsN * tile;
+		const h = rowsN * tile;
+		gridCanvas.width = w;
+		gridCanvas.height = h;
+		const ctx = gridCanvas.getContext("2d");
+		ctx.fillStyle = "#0a1419";
+		ctx.fillRect(0, 0, w, h);
+		// 画格子线
+		ctx.strokeStyle = "#1a2a33";
+		ctx.lineWidth = 1;
+		for (let x = 0; x <= colsN; x++) {
+			ctx.beginPath();
+			ctx.moveTo(x * tile + 0.5, 0);
+			ctx.lineTo(x * tile + 0.5, h);
+			ctx.stroke();
+		}
+		for (let y = 0; y <= rowsN; y++) {
+			ctx.beginPath();
+			ctx.moveTo(0, y * tile + 0.5);
+			ctx.lineTo(w, y * tile + 0.5);
+			ctx.stroke();
+		}
+		// 画前景格
+		ctx.fillStyle = "#47b00a";
+		for (let y = 0; y < rowsN; y++) {
+			for (let x = 0; x < colsN; x++) {
+				if (cells[y][x]) {
+					ctx.fillRect(x * tile + 1, y * tile + 1, tile - 2, tile - 2);
+				}
+			}
+		}
+	}
+
+	function renderStats(count) {
+		statCount.textContent = count;
+		const even = count % 2 === 0;
+		statCount.className = "v " + (count > 144 ? "warn" : "ok");
+		statEven.textContent = even ? "是" : "否";
+		statEven.className = "v " + (even ? "ok" : "err");
+
+		// badge
+		gridBadge.innerHTML = "";
+		if (count === 0) {
+			const b = document.createElement("span");
+			b.className = "badge err";
+			b.textContent = "无前景";
+			gridBadge.appendChild(b);
+		} else if (!even) {
+			const b = document.createElement("span");
+			b.className = "badge err";
+			b.textContent = "奇数";
+			gridBadge.appendChild(b);
+		} else if (count > 144) {
+			const b = document.createElement("span");
+			b.className = "badge warn";
+			b.textContent = "扩展牌组";
+			gridBadge.appendChild(b);
+		} else {
+			const b = document.createElement("span");
+			b.className = "badge ok";
+			b.textContent = "可用";
+			gridBadge.appendChild(b);
+		}
+
+		downloadBtn.disabled = count === 0 || !even;
+	}
+
+	// ---------- 生成 .mah ----------
+	// 麻将牌 x/y 步长为 2（2×2 占位），所以 cell(x,y) → Place [0, x*2, y*2]
+	function buildMapping(cells, colsN, rowsN) {
+		const mapping = [];
+		for (let y = 0; y < rowsN; y++) {
+			for (let x = 0; x < colsN; x++) {
+				if (cells[y][x]) {
+					mapping.push([0, x * 2, y * 2]);
+				}
+			}
+		}
+		return mapping;
+	}
+
+	// 优化：平移到原点
+	function optimizeMapping(mapping) {
+		if (mapping.length === 0) return [];
+		let minZ = mapping[0][0], minX = mapping[0][1], minY = mapping[0][2];
+		for (const p of mapping) {
+			if (p[0] < minZ) minZ = p[0];
+			if (p[1] < minX) minX = p[1];
+			if (p[2] < minY) minY = p[2];
+		}
+		return mapping.map((p) => [p[0] - minZ, p[1] - minX, p[2] - minY]);
+	}
+
+	// 紧凑映射压缩（与游戏内 compactMapping 等价）
+	function compactMapping(mapping) {
+		// 按 z → y → x 排序
+		const sorted = [...mapping].sort((a, b) =>
+			a[0] === b[0] ? (a[2] === b[2] ? a[1] - b[1] : a[2] - b[2]) : a[0] - b[0]
+		);
+		// 分组：board[z][y] = [x...]
+		const board = {};
+		for (const m of sorted) {
+			const z = m[0], x = m[1], y = m[2];
+			if (!board[z]) board[z] = {};
+			if (!board[z][y]) board[z][y] = [];
+			board[z][y].push(x);
+		}
+		// 每行的 x 序列按连续（步长 2）合并为 [start, count] 或单值
+		const result = [];
+		for (const zKey of Object.keys(board)) {
+			const z = Number(zKey);
+			const rowsArr = [];
+			for (const yKey of Object.keys(board[z])) {
+				const y = Number(yKey);
+				const xs = board[z][y].sort((a, b) => a - b);
+				const entries = [];
+				let entry = { start: -1, current: -1, count: 0 };
+				for (const x of xs) {
+					if (x === entry.current) {
+						entry.current += 2;
+						entry.count++;
+					} else {
+						entry = { start: x, current: x + 2, count: 1 };
+						entries.push(entry);
+					}
+				}
+				const cellsArr = entries.map((e) =>
+					e.count === 1 ? e.start : [e.start, e.count]
+				);
+				const cellVal =
+					cellsArr.length === 1 && !Array.isArray(cellsArr[0]) ? cellsArr[0] : cellsArr;
+				rowsArr.push([y, cellVal]);
+			}
+			result.push([z, rowsArr]);
+		}
+		return result;
+	}
+
+	// 32 位 hash（与游戏 hashString 等价）
+	function hashCode(s) {
+		let hash = 0;
+		for (let i = 0; i < s.length; i++) {
+			const chr = s.codePointAt(i) || 0;
+			hash = (hash << 5) - hash + chr;
+			hash |= 0;
+		}
+		return hash;
+	}
+	function hashString(s) {
+		if (s.length === 0) return 0;
+		return hashCode(s) + 2147483647;
+	}
+
+	function downloadMah() {
+		if (!state.cells) return;
+		const cells = state.cells;
+		const colsN = state.gridCols;
+		const rowsN = state.gridRows;
+		const mapping = optimizeMapping(buildMapping(cells, colsN, rowsN));
+		const compact = compactMapping(mapping);
+		const id = hashString(JSON.stringify(mapping)).toString();
+		const name = (boardName.value || "From Image").trim();
+		const cat = (boardCat.value || "Custom").trim();
+		const by = (boardBy.value || "").trim();
+		const board = {
+			id,
+			name,
+			cat,
+			map: compact
+		};
+		if (by) board.by = by;
+		const mah = { mah: "1.0", boards: [board] };
+		const blob = new Blob([JSON.stringify(mah)], { type: "text/json" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = name.toLowerCase().replace(/\s+/g, "_") + ".mah";
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+
+	// ---------- 事件 ----------
+	function handleFile(file) {
+		if (!file || !file.type.startsWith("image/")) {
+			dropText.textContent = "请选择图片文件";
+			return;
+		}
+		dropText.textContent = file.name;
+		readImage(file)
+			.then((img) => {
+				state.img = img;
+				renderSrc();
+				generate();
+			})
+			.catch((err) => {
+				dropText.textContent = "加载失败：" + err.message;
+			});
+	}
+
+	fileInput.addEventListener("change", (e) => {
+		const f = e.target.files && e.target.files[0];
+		if (f) handleFile(f);
+	});
+
+	["dragenter", "dragover"].forEach((ev) => {
+		dropZone.addEventListener(ev, (e) => {
+			e.preventDefault();
+			dropZone.classList.add("dragover");
+		});
+	});
+	["dragleave", "drop"].forEach((ev) => {
+		dropZone.addEventListener(ev, (e) => {
+			e.preventDefault();
+			dropZone.classList.remove("dragover");
+		});
+	});
+	dropZone.addEventListener("drop", (e) => {
+		const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+		if (f) handleFile(f);
+	});
+
+	modeSeg.addEventListener("click", (e) => {
+		const btn = e.target.closest("button[data-mode]");
+		if (!btn) return;
+		state.mode = btn.dataset.mode;
+		setModeUI();
+		generate();
+	});
+
+	thresh.addEventListener("input", (e) => {
+		state.thresh = Number(e.target.value);
+		threshVal.textContent = state.thresh;
+		generate();
+	});
+	cols.addEventListener("input", (e) => {
+		state.cols = Number(e.target.value);
+		colsVal.textContent = state.cols;
+		generate();
+	});
+	rows.addEventListener("input", (e) => {
+		state.rows = Number(e.target.value);
+		rowsVal.textContent = state.rows;
+		generate();
+	});
+	pad.addEventListener("input", (e) => {
+		state.pad = Number(e.target.value);
+		padVal.textContent = state.pad;
+		generate();
+	});
+	evenSeg.addEventListener("click", (e) => {
+		const btn = e.target.closest("button[data-even]");
+		if (!btn) return;
+		state.evenMode = btn.dataset.even;
+		[...evenSeg.children].forEach((b) => {
+			b.classList.toggle("active", b === btn);
+		});
+		generate();
+	});
+
+	downloadBtn.addEventListener("click", downloadMah);
+
+	// 初始化
+	setModeUI();
+	renderSrc();
+})();
+</script>
+</body>
+</html>

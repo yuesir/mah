@@ -774,5 +774,17 @@ p {
 
 	&.overlay-help {
 		z-index: 10010;
+
+		.overlay-popup {
+			width: fit-content;
+			min-width: 320px;
+			max-width: calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right));
+		}
+
+		@include mixins.respond-to(small-down) {
+			.overlay-popup {
+				width: calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right));
+			}
+		}
 	}
 }

@@ -142,7 +142,7 @@ export class GameComponent {
 		this.game = this.app.game;
 		this.game.onWin = () => this.triggerConfetti();
 		this.fullScreenEnabled = this.canFullscreen();
-		this.title = `${this.app.name} v${environment.version}`;
+		this.title = this.app.name;
 	}
 
 	triggerConfetti(): void {
