@@ -70,6 +70,44 @@
 			100% { transform: scale(1); }
 		}
 
+		g.blocked g.tile {
+			filter: grayscale(0.6);
+			opacity: 0.8;
+		}
+
+		g.blocked g.tile rect.stone {
+			fill: #d8d8d8;
+			stroke: #9a9a9a;
+		}
+
+		g.blocked g.tile rect.shadow {
+			fill: #9a9a9a;
+			opacity: 0.6;
+		}
+
+		g.blocked g.tile > use {
+			opacity: 0.75;
+		}
+
+		g.stage.dark g.blocked g.tile rect.stone {
+			fill: #2a2a2a;
+			stroke: #555;
+		}
+
+		g.stage.dark g.blocked g.tile rect.shadow {
+			fill: #3a3a3a;
+			opacity: 0.5;
+		}
+
+		g.blocked.hinted g.tile rect.stone {
+			stroke: #ff5900;
+			stroke-width: 3px;
+		}
+
+		g.stage.dark g.blocked.hinted g.tile rect.stone {
+			stroke: #ef0202;
+		}
+
 		g.matched g.tile {
 			animation: mah-match-flash 600ms ease-out;
 		}
@@ -289,6 +327,7 @@
 				[class.hidden]="draw.source.picked"
 				[class.hinted]="draw.source.hinted"
 				[class.matched]="draw.source.matched"
+				[class.blocked]="draw.source.state.blocked"
 				[class.wiggle]="draw.source.effects?.wiggle"
 				[attr.transform]="draw.pos.translate"
 				[attr.role]="!draw.source.picked && !draw.source.state.blocked ? 'button' : null"
