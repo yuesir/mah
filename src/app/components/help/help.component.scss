@@ -2,6 +2,7 @@
 
 :host {
 	display: block;
+	color: var(--dialog-text-color);
 
 	.help-wrap {
 		display: flex;
@@ -14,13 +15,14 @@
 		padding: 14px 20px 18px;
 		width: 100%;
 		max-width: 560px;
-		background: var(--main-bg-color);
+		background: var(--dialog-background-color);
 
 		legend {
 			padding: 0 8px;
 			font-weight: bold;
 			font-size: 1.1em;
 			letter-spacing: 0.3px;
+			color: var(--dialog-headline-color);
 		}
 
 		p {
@@ -31,9 +33,9 @@
 		.goal {
 			font-size: 1.02em;
 			padding: 8px 12px;
-			background: var(--main-bg-color-lt);
+			background: var(--dialog-background-color-hover);
 			border-radius: 8px;
-			border-inline-start: 3px solid var(--main-content-link-color);
+			border-inline-start: 3px solid var(--dialog-headline-color);
 		}
 
 		.rule {
@@ -43,17 +45,18 @@
 			margin-bottom: 12px;
 			padding: 8px 12px;
 			border-radius: 8px;
-			background: var(--main-bg-color-lt);
+			background: var(--dialog-background-color-hover);
 
 			.rule-label {
 				font-weight: bold;
-				color: var(--main-content-text-color);
+				color: var(--dialog-headline-color);
 			}
 
 			.rule-desc {
 				font-size: 0.92em;
 				opacity: 0.85;
 				line-height: 1.5;
+				color: var(--dialog-text-color);
 			}
 		}
 
