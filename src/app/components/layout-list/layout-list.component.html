@@ -1,141 +1,142 @@
-@if (groups().length > 1) {
-	<div class="headline-anchors">
+<div class="layout-master-detail">
+	<nav class="category-nav" [attr.aria-label]="'SELECT_BOARD' | translate">
 		@for (group of groups(); track group; let i = $index) {
-			<a [href]="'#group-' + i" (click)="scrollToGroup($event, i)">{{ group.name | translateGroup }}</a>
+			<button
+				type="button"
+				class="category-item"
+				[class.active]="i === selectedGroupIndex()"
+				[class.is-random]="group.isRandom"
+				(click)="selectGroup(i)"
+				[attr.aria-current]="i === selectedGroupIndex() ? 'true' : null"
+			>
+				<span class="category-name">{{ group.name | translateGroup }}</span>
+				@if (!group.isRandom) {
+					<span class="category-count">{{ group.layouts.length }}</span>
+				}
+			</button>
 		}
-	</div>
-}
-<div #scrollHost class="groups">
-	@for (group of groups(); track group; let i = $index) {
-		<div class="group" id="group-{{i}}">
-			@if (groups().length > 1) {
-				<div
-					class="group-name"
-					tabindex="0"
-					role="button"
-					[attr.aria-expanded]="group.expanded"
-					(click)="toggleGroupExpanded($event, group)"
-					(keydown.enter)="toggleGroupExpanded($event, group)"
-					(keydown.space)="toggleGroupExpanded($event, group)"
-				>
-					<span class="group-expander" [class.expanded]="group.expanded"></span>
-					{{ group.name | translateGroup }}
-					<span class="group-count"></span>
-				</div>
-			}
-			@if (group.expanded) {
-				@if (group.isRandom) {
-					<div class="previews previews-random" appDeferLoadScrollHost>
-						@for (item of group.layouts; track item) {
-							<div
-								class="preview preview-seed-card"
-								tabindex="0"
-								role="button"
-								[id]="'item-'+item.layout.id"
-								[class.selected]="item.selected"
-								[attr.aria-pressed]="item.selected"
-								[attr.aria-label]="item.layout.name"
-								(keydown.enter)="onStartEvent($event, item)"
-								(keydown.space)="onStartEvent($event, item)"
-								(click)="onStartEvent($event, item)"
-								(appDeferLoad)="item.visible=true"
-							>
-								@if (item.visible) {
-									<app-layout-preview class="svg-board" [svg]="item.layout.previewSVG" [alt]="item.layout.name"></app-layout-preview>
-								} @else {
-									<div
-										class="preview-placeholder"
-										[id]="'item-'+item.layout.id"
-										[class.selected]="item.selected"
-									>
-									</div>
-								}
-								<div class="preview-seed" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-									<input
-										type="text" class="seed-input"
-										[value]="$any(item).layoutSeed ?? ''"
-										(keyup)="$event.stopPropagation(); regenerateWithSeed($any(item), $any($event.target).value)"
-										[attr.aria-label]="'LAYOUT_SEED_LABEL' | translate"
-										[attr.title]="'LAYOUT_SEED_LABEL' | translate"
-									/>
+	</nav>
+
+	<div #scrollHost class="detail-pane">
+		@if (selectedGroup(); as group) {
+			<div class="detail-header">
+				<h2 class="detail-title">{{ group.name | translateGroup }}</h2>
+				@if (!group.isRandom) {
+					<span class="detail-count">{{ group.layouts.length }}</span>
+				}
+			</div>
+
+			@if (group.isRandom) {
+				<div class="previews previews-random" appDeferLoadScrollHost>
+					@for (item of group.layouts; track item) {
+						<div
+							class="preview preview-seed-card"
+							tabindex="0"
+							role="button"
+							[id]="'item-'+item.layout.id"
+							[class.selected]="item.selected"
+							[attr.aria-pressed]="item.selected"
+							[attr.aria-label]="item.layout.name"
+							(keydown.enter)="onStartEvent($event, item)"
+							(keydown.space)="onStartEvent($event, item)"
+							(click)="onStartEvent($event, item)"
+							(appDeferLoad)="item.visible=true"
+						>
+							@if (item.visible) {
+								<app-layout-preview class="svg-board" [svg]="item.layout.previewSVG" [alt]="item.layout.name"></app-layout-preview>
+							} @else {
+								<div
+									class="preview-placeholder"
+									[id]="'item-'+item.layout.id"
+									[class.selected]="item.selected"
+								>
 								</div>
-							</div>
-						}
-						<div class="preview-random">
-							<div class="random-options">
-								<label for="random-setting-vertical">
-									<app-icon-mirror-vertical/>
-									{{ 'MIRROR_X' | translate }}
-								</label>
-								<select id="random-setting-vertical" (change)="this.randomMirrorXSet($any($event.target).value)">
-									<option value="random" [selected]="this.randomMirrorX() ==='random'">{{ 'RANDOM_MIRROR' | translate }}</option>
-									<option value="true" [selected]="this.randomMirrorX() ==='true'">{{ 'YES' | translate }}</option>
-									<option value="false" [selected]="this.randomMirrorX() ==='false'">{{ 'NO' | translate }}</option>
-								</select>
-							</div>
-							<div class="random-options">
-								<label for="random-setting-horizontal">
-									<app-icon-mirror-horizontal/>
-									{{ 'MIRROR_Y' | translate }}
-								</label>
-								<select id="random-setting-horizontal" (change)="this.randomMirrorYSet($any($event.target).value)">
-									<option value="random" [selected]="this.randomMirrorY() ==='random'">{{ 'RANDOM_MIRROR' | translate }}</option>
-									<option value="true" [selected]="this.randomMirrorY() ==='true'">{{ 'YES' | translate }}</option>
-									<option value="false" [selected]="this.randomMirrorY() ==='false'">{{ 'NO' | translate }}</option>
-								</select>
-							</div>
-							<div>
-								<button type="button" (click)="generateRandomLayouts()">
-									{{ 'GENERATE' | translate }}
-								</button>
+							}
+							<div class="preview-seed" tabindex="-1" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+								<input
+									type="text" class="seed-input"
+									[value]="$any(item).layoutSeed ?? ''"
+									(keyup)="$event.stopPropagation(); regenerateWithSeed($any(item), $any($event.target).value)"
+									[attr.aria-label]="'LAYOUT_SEED_LABEL' | translate"
+									[attr.title]="'LAYOUT_SEED_LABEL' | translate"
+								/>
 							</div>
 						</div>
+					}
+					<div class="preview-random">
+						<div class="random-options">
+							<label for="random-setting-vertical">
+								<app-icon-mirror-vertical/>
+								{{ 'MIRROR_X' | translate }}
+							</label>
+							<select id="random-setting-vertical" (change)="this.randomMirrorXSet($any($event.target).value)">
+								<option value="random" [selected]="this.randomMirrorX() ==='random'">{{ 'RANDOM_MIRROR' | translate }}</option>
+								<option value="true" [selected]="this.randomMirrorX() ==='true'">{{ 'YES' | translate }}</option>
+								<option value="false" [selected]="this.randomMirrorX() ==='false'">{{ 'NO' | translate }}</option>
+							</select>
+						</div>
+						<div class="random-options">
+							<label for="random-setting-horizontal">
+								<app-icon-mirror-horizontal/>
+								{{ 'MIRROR_Y' | translate }}
+							</label>
+							<select id="random-setting-horizontal" (change)="this.randomMirrorYSet($any($event.target).value)">
+								<option value="random" [selected]="this.randomMirrorY() ==='random'">{{ 'RANDOM_MIRROR' | translate }}</option>
+								<option value="true" [selected]="this.randomMirrorY() ==='true'">{{ 'YES' | translate }}</option>
+								<option value="false" [selected]="this.randomMirrorY() ==='false'">{{ 'NO' | translate }}</option>
+							</select>
+						</div>
+						<div>
+							<button type="button" (click)="generateRandomLayouts()">
+								{{ 'GENERATE' | translate }}
+							</button>
+						</div>
 					</div>
-				} @else {
-					<div class="previews" appDeferLoadScrollHost>
-						@for (item of group.layouts; track item) {
-							<div
-								class="preview"
-								tabindex="0"
-								role="button"
-								[id]="'item-'+item.layout.id"
-								[class.selected]="item.selected"
-								[attr.aria-pressed]="item.selected"
-								[attr.aria-label]="item.layout.name"
-								(keydown.enter)="onStartEvent($event, item)"
-								(keydown.space)="onStartEvent($event, item)"
-								(click)="onStartEvent($event, item)"
-								(appDeferLoad)="item.visible=true"
-							>
-								@if (item.visible) {
-									<app-layout-preview class="svg-board" [svg]="item.layout.previewSVG" [alt]="item.layout.name"></app-layout-preview>
-								} @else {
-									<div class="preview-placeholder" [class.selected]="item.selected"></div>
-								}
-								@if (item.bestTime) {
-									<div class="preview-best-time">
-										<span title="{{ 'STATS_BEST' | translate }}">{{ item.bestTime|duration }}</span>
-										<button type="button" (click)="clearBestTimeClick($event, item)" [attr.aria-label]="'BEST_TIME_CLEAR' | translate">
-											<app-icon-delete/>
-										</button>
-									</div>
-								}
-								<div class="preview-name">{{ item.layout.name }}</div>
-								@if (item.layout.custom) {
-									<button type="button"
-										class="preview-custom-delete"
-										(click)="removeCustomLayout($event, item)"
-										title="{{ 'CUSTOM_BOARD_DELETE' | translate }}"
-										[attr.aria-label]="'CUSTOM_BOARD_DELETE' | translate"
-									>
+				</div>
+			} @else {
+				<div class="previews" appDeferLoadScrollHost>
+					@for (item of group.layouts; track item) {
+						<div
+							class="preview"
+							tabindex="0"
+							role="button"
+							[id]="'item-'+item.layout.id"
+							[class.selected]="item.selected"
+							[attr.aria-pressed]="item.selected"
+							[attr.aria-label]="item.layout.name"
+							(keydown.enter)="onStartEvent($event, item)"
+							(keydown.space)="onStartEvent($event, item)"
+							(click)="onStartEvent($event, item)"
+							(appDeferLoad)="item.visible=true"
+						>
+							@if (item.visible) {
+								<app-layout-preview class="svg-board" [svg]="item.layout.previewSVG" [alt]="item.layout.name"></app-layout-preview>
+							} @else {
+								<div class="preview-placeholder" [class.selected]="item.selected"></div>
+							}
+							@if (item.bestTime) {
+								<div class="preview-best-time">
+									<span title="{{ 'STATS_BEST' | translate }}">{{ item.bestTime|duration }}</span>
+									<button type="button" (click)="clearBestTimeClick($event, item)" [attr.aria-label]="'BEST_TIME_CLEAR' | translate">
 										<app-icon-delete/>
 									</button>
-								}
-							</div>
-						}
-					</div>
-				}
+								</div>
+							}
+							<div class="preview-name">{{ item.layout.name }}</div>
+							@if (item.layout.custom) {
+								<button type="button"
+									class="preview-custom-delete"
+									(click)="removeCustomLayout($event, item)"
+									title="{{ 'CUSTOM_BOARD_DELETE' | translate }}"
+									[attr.aria-label]="'CUSTOM_BOARD_DELETE' | translate"
+								>
+									<app-icon-delete/>
+								</button>
+							}
+						</div>
+					}
+				</div>
 			}
-		</div>
-	}
+		}
+	</div>
 </div>

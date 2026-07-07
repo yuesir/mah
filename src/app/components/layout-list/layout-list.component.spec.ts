@@ -44,6 +44,22 @@ describe('LayoutListComponent', () => {
 		expect(component.groups().at(-1)?.isRandom).toBe(true);
 	});
 
+	it('selectGroup switches the selected group and updates selectedGroup()', () => {
+		fixture.componentRef.setInput('layouts', [makeLayout('A', 'Cat1'), makeLayout('C', 'Cat2')]);
+		fixture.detectChanges();
+
+		expect(component.selectedGroupIndex()).toBe(0);
+		expect(component.selectedGroup()?.name).toBe('Cat1');
+
+		component.selectGroup(1);
+		expect(component.selectedGroupIndex()).toBe(1);
+		expect(component.selectedGroup()?.name).toBe('Cat2');
+
+		// out-of-range ignored
+		component.selectGroup(999);
+		expect(component.selectedGroupIndex()).toBe(1);
+	});
+
 	it('updates the mirror signal when changed', () => {
 		component.randomMirrorXSet('true');
 		expect(component.randomMirrorX()).toBe('true');

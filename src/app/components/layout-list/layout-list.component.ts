@@ -1,4 +1,4 @@
-import { Component, type OnChanges, type SimpleChanges, ChangeDetectorRef, inject, input, output, signal, viewChild, type ElementRef, type OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, type OnChanges, type SimpleChanges, ChangeDetectorRef, computed, inject, input, output, signal, viewChild, type ElementRef, type OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import type { Layout } from '../../model/types';
 import { LocalstorageService } from '../../service/localstorage.service';
@@ -55,6 +55,11 @@ export class LayoutListComponent implements OnInit, OnChanges {
 	readonly startEvent = output<Layout>();
 	readonly scrollHost = viewChild.required<ElementRef<HTMLElement>>('scrollHost');
 	readonly groups = signal<Array<LayoutGroup>>([]);
+	readonly selectedGroupIndex = signal<number>(0);
+	readonly selectedGroup = computed<LayoutGroup | undefined>(() => {
+		const groups = this.groups();
+		return groups[this.selectedGroupIndex()] ?? groups[0];
+	});
 	readonly randomMirrorX = signal('random');
 	readonly randomMirrorY = signal('random');
 	readonly randomGroup: RandomLayoutGroup = {
@@ -149,13 +154,35 @@ export class LayoutListComponent implements OnInit, OnChanges {
 			if (boardID && layouts.some(l => l.id === boardID)) {
 				id = boardID;
 			}
+			// 默认选中「上次玩关卡所在分类」（无则选中第一个分类）
+			this.selectedGroupIndex.set(0);
 			if (id) {
+				const groups = this.groups();
+				for (let gi = 0; gi < groups.length; gi++) {
+					if (groups[gi].layouts.some(it => it.layout.id === id)) {
+						this.selectedGroupIndex.set(gi);
+						break;
+					}
+				}
 				setTimeout(() => {
 					this.select(id);
 					// selection happens async, so nudge the OnPush view to render it
 					this.cdr.markForCheck();
 				}, 0);
 			}
+		}
+	}
+
+	selectGroup(index: number): void {
+		const groups = this.groups();
+		if (index < 0 || index >= groups.length) {
+			return;
+		}
+		this.selectedGroupIndex.set(index);
+		// 复位右侧详情区滚动到顶部，并触发懒加载重算
+		const host = this.scrollHost()?.nativeElement;
+		if (host) {
+			host.scrollTop = 0;
 		}
 	}
 
@@ -187,38 +214,6 @@ export class LayoutListComponent implements OnInit, OnChanges {
 		this.groups.set(groups);
 	}
 
-	scrollToElement(element: HTMLElement, container: HTMLElement): void {
-		if (!element || !container) {
-			return;
-		}
-
-		const elementRect = element.getBoundingClientRect();
-		const containerRect = container.getBoundingClientRect();
-		const targetTop = elementRect.top - containerRect.top + container.scrollTop;
-
-		container.scrollTo({
-			top: targetTop,
-			behavior: 'auto'
-		});
-	}
-
-	scrollToGroup(event: Event, index: number): void {
-		event.preventDefault();
-		const element = document.getElementById(`group-${index}`);
-		if (element) {
-			this.scrollToElement(element, this.scrollHost().nativeElement);
-			element.querySelector<HTMLElement>('[tabindex="0"]')?.focus();
-		}
-	}
-
-	scrollToItem(id: string): void {
-		const element = document.getElementById(`item-${id}`);
-		if (element) {
-			this.scrollToElement(element, this.scrollHost().nativeElement);
-			element.focus();
-		}
-	}
-
 	select(id?: string): void {
 		if (!id) {
 			return;
@@ -229,12 +224,8 @@ export class LayoutListComponent implements OnInit, OnChanges {
 				layout.selected = layout.layout.id === id;
 			}
 		}
-		this.scrollToItem(id);
-	}
-
-	toggleGroupExpanded(event: Event, group: LayoutGroup): void {
-		event.preventDefault();
-		group.expanded = !group.expanded;
+		// master-detail 下右侧详情区只展示当前分类，切换分类后 DOM 已变化，
+		// 不再进行跨容器滚动定位，仅靠 selected 高亮卡片即可。
 	}
 
 	clearBestTimeClick(event: MouseEvent, layout: LayoutItem): void {
