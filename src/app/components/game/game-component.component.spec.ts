@@ -5,6 +5,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideHttpClient } from '@angular/common/http';
 import { AppService } from '../../service/app.service';
 import { SvgdefService } from '../../service/svgdef.service';
+import { LayoutService } from '../../service/layout.service';
 import { GameComponent } from './game-component.component';
 import { By } from '@angular/platform-browser';
 import { GAME_MODE_EASY, GAME_MODE_EXPERT, GAME_MODE_STANDARD } from '../../model/consts';
@@ -36,7 +37,7 @@ describe('GameComponent', () => {
 	beforeEach(async () =>
 		TestBed.configureTestingModule({
 			imports: [GameComponent],
-			providers: [provideTranslateService(), provideHttpClient(), provideHttpClientTesting(), SvgdefService, AppService]
+			providers: [provideTranslateService(), provideHttpClient(), provideHttpClientTesting(), SvgdefService, AppService, LayoutService]
 		})
 			.overrideComponent(GameComponent, { set: { changeDetection: ChangeDetectionStrategy.Default } })
 			.compileComponents());

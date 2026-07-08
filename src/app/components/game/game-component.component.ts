@@ -3,6 +3,7 @@ import type { Game } from '../../model/game';
 import type { Stone } from '../../model/stone';
 import type { Layout, Place } from '../../model/types';
 import { AppService } from '../../service/app.service';
+import { LayoutService } from '../../service/layout.service';
 import { log } from '../../model/log';
 import type { BUILD_MODE_ID } from '../../model/builder';
 import { GAME_MODE_EASY, type GAME_MODE_ID, GAME_MODE_STANDARD } from '../../model/consts';
@@ -108,6 +109,7 @@ export class GameComponent {
 	readonly newgame = viewChild.required<DialogComponent>('newgame');
 	readonly tutorial = viewChild.required<DialogComponent>('tutorial');
 	readonly app = inject(AppService);
+	readonly layoutService = inject(LayoutService);
 	game: Game;
 	fullScreenEnabled: boolean = true;
 	menuOpen: boolean = false;
@@ -498,6 +500,28 @@ export class GameComponent {
 		this.newgame().visible.set(false);
 		this.game.reset();
 		this.game.start(data.layout, data.buildMode, data.gameMode);
+	}
+
+	// 使用当前关卡的布局/生成器/难度直接重开一局（下一关）
+	nextLevel(event?: Event): void {
+		if (event) {
+			event.stopPropagation();
+			event.preventDefault();
+		}
+		const id = this.game.layoutID;
+		if (!id) {
+			this.game.reset();
+			this.showNewGame();
+			return;
+		}
+		const layout = this.layoutService.layouts.items.find(l => l.id === id);
+		if (!layout) {
+			this.game.reset();
+			this.showNewGame();
+			return;
+		}
+		this.game.reset();
+		this.game.start(layout, this.game.board.buildMode, this.game.mode);
 	}
 
 	toggleDialogState(dialogVisible: boolean): void {

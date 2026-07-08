@@ -35,19 +35,12 @@
 
 <app-dialog (clickEvent)="clickMessage()" [visible]="!!game.message" className="overlay-message overlay-size-auto" [noCloseButton]="true">
 	@if (game.message) {
-		<div
-			class="overlay-message-message"
-			role="button"
-			tabindex="0"
-			(click)="clickMessage($event)"
-			(keydown.enter)="clickMessage($event)"
-			(keydown.space)="clickMessage($event)"
-		>
+		<div class="overlay-message-message" tabindex="0">
 			@if (game.message.messageID) {
-				<div>{{ game.message.messageID | translate }}</div>
+				<div class="message-title">{{ game.message.messageID | translate }}</div>
 			}
 			@if (game.message.playTime) {
-				<div>{{ game.message.playTime | duration }}</div>
+				<div class="message-time">{{ game.message.playTime | duration }}</div>
 			}
 			@if (game.message.askShuffle) {
 				<div class="overlay-message-actions">
@@ -66,6 +59,34 @@
 					>
 						<app-icon-restart/>
 						<span class="label">{{ 'RESTART' | translate }}</span>
+					</button>
+				</div>
+			} @else if (game.message.messageID && game.message.messageID !== 'MSG_START' && game.message.messageID !== 'MSG_CONTINUE_PAUSE' && game.message.messageID !== 'MSG_CONTINUE_SAVE') {
+				<div class="overlay-message-actions">
+					<button
+						type="button"
+						class="button button-primary"
+						(click)="nextLevel($event)"
+					>
+						<app-icon-restart/>
+						<span class="label">{{ 'NEXT_LEVEL' | translate }}</span>
+					</button>
+					<button
+						type="button"
+						class="button"
+						(click)="clickMessage($event)"
+					>
+						<span class="label">{{ 'RESTART' | translate }}</span>
+					</button>
+				</div>
+			} @else {
+				<div class="overlay-message-actions">
+					<button
+						type="button"
+						class="button button-primary"
+						(click)="clickMessage($event)"
+					>
+						<span class="label">{{ 'MSG_PLAY_AGAIN' | translate }}</span>
 					</button>
 				</div>
 			}

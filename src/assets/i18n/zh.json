@@ -19,6 +19,7 @@
 	"MSG_CONTINUE_SAVE": "继续保存的游戏…",
 	"MSG_START": "开始游戏",
 	"MSG_PLAY_AGAIN": "再玩一次",
+	"NEXT_LEVEL": "下一关",
 	"MSG_BEST": "恭喜，新的最佳时间！",
 	"MSG_GOOD": "做得好！",
 	"MSG_FAIL": "没有更多可匹配的牌了。",

@@ -19,6 +19,7 @@
 	"MSG_CONTINUE_SAVE": "Continue Saved Game…",
 	"MSG_START": "Start Game",
 	"MSG_PLAY_AGAIN": "Play again",
+	"NEXT_LEVEL": "Next Level",
 	"MSG_BEST": "Congratulations, new best time!",
 	"MSG_GOOD": "Well done!",
 	"MSG_FAIL": "No more matching tiles.",

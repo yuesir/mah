@@ -735,24 +735,61 @@ p {
 	&.overlay-message {
 		.overlay-message-actions {
 			margin-top: 20px;
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: center;
+			gap: 10px;
+
+			.button {
+				min-width: 120px;
+
+				.label {
+					margin-left: 4px;
+				}
+			}
+
+			.button-primary {
+				background-color: var(--main-text-color);
+				border-color: var(--main-text-color);
+				color: var(--main-bg-color);
+				font-weight: 600;
+
+				&:hover {
+					background-color: var(--main-text-color-hover);
+					border-color: var(--main-text-color-hover);
+				}
+			}
 		}
 
 		.overlay-popup {
-			cursor: pointer;
-			font-weight: 600;
 			text-align: center;
-			color: var(--dialog-headline-color);
+			color: var(--dialog-text-color);
 			padding: 0;
 			user-select: none;
 			outline: none;
 		}
 
 		.overlay-message-message {
-			padding: 2em;
+			padding: 1.8em 2.2em;
 			outline: none;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 4px;
 
-			&:hover {
+			.message-title {
+				font-size: 1.15em;
+				font-weight: 700;
+				color: var(--dialog-headline-color);
+				line-height: 1.3;
+			}
+
+			.message-time {
+				font-size: 1.4em;
+				font-weight: 600;
 				color: var(--text-highlight-color);
+				font-variant-numeric: tabular-nums;
+				margin-top: 2px;
 			}
 
 			&:focus-visible {
