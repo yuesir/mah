@@ -502,26 +502,60 @@ export class GameComponent {
 		this.game.start(data.layout, data.buildMode, data.gameMode);
 	}
 
-	// 使用当前关卡的布局/生成器/难度直接重开一局（下一关）
+	// 下一关：
+	// 1) 当前分类里找未玩过的 → 2) 全局找未玩过的（随机）→ 3) 全玩过则从全部棋盘随机一个
 	nextLevel(event?: Event): void {
 		if (event) {
 			event.stopPropagation();
 			event.preventDefault();
 		}
-		const id = this.game.layoutID;
-		if (!id) {
+		const items = this.layoutService.layouts.items;
+		if (items.length === 0) {
 			this.game.reset();
 			this.showNewGame();
 			return;
 		}
-		const layout = this.layoutService.layouts.items.find(l => l.id === id);
-		if (!layout) {
+
+		// 「玩过」= 有胜局记录（winCount > 0）
+		const hasWon = (id: string): boolean => {
+			const score = this.app.storage.getScore(id);
+			return !!(score && (score.winCount ?? 0) > 0);
+		};
+
+		// 1) 当前分类里找未玩过的（排除当前关卡）
+		const currentId = this.game.layoutID;
+		const current = items.find(l => l.id === currentId);
+		const category = current?.category;
+		if (category) {
+			const unplayedInCat = items.filter(l => l.category === category && l.id !== currentId && !hasWon(l.id));
+			if (unplayedInCat.length > 0) {
+				// 取列表顺序的下一个未玩关卡（稳定、可预期）
+				const startIdx = items.findIndex(l => l.id === currentId);
+				const ordered = items
+					.map((l, i) => ({ l, i }))
+					.filter(({ l }) => l.category === category && l.id !== currentId && !hasWon(l.id));
+				// 优先选当前关卡之后的，没有则用第一个
+				const after = ordered.find(({ i }) => i > startIdx);
+				const pick = (after ?? ordered[0]).l;
+				this.game.reset();
+				this.game.start(pick, this.game.board.buildMode, this.game.mode);
+				return;
+			}
+		}
+
+		// 2) 全局找未玩过的，随机一个
+		const unplayedAll = items.filter(l => !hasWon(l.id));
+		if (unplayedAll.length > 0) {
+			const pick = unplayedAll[Math.floor(Math.random() * unplayedAll.length)];
 			this.game.reset();
-			this.showNewGame();
+			this.game.start(pick, this.game.board.buildMode, this.game.mode);
 			return;
 		}
+
+		// 3) 全玩过了，从全部棋盘随机一个（相当于 Random）
+		const pick = items[Math.floor(Math.random() * items.length)];
 		this.game.reset();
-		this.game.start(layout, this.game.board.buildMode, this.game.mode);
+		this.game.start(pick, this.game.board.buildMode, this.game.mode);
 	}
 
 	toggleDialogState(dialogVisible: boolean): void {
