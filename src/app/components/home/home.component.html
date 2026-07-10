@@ -1,0 +1,140 @@
+<main class="home-shell" [class.view-list]="viewMode() === 'list'">
+	<header class="home-topbar" aria-label="Mahjong Game home">
+		<div class="brand-lockup">
+			<div class="brand-mark" aria-hidden="true">中</div>
+			<div>
+				<h1>{{ app.name }}</h1>
+				<p>Relax. Match. Conquer.</p>
+			</div>
+		</div>
+		<nav class="top-actions" aria-label="Home actions">
+			<button type="button" title="Achievements" aria-label="Achievements">♜</button>
+			<button type="button" title="Statistics" aria-label="Statistics">▥</button>
+			<button type="button" title="Settings" aria-label="Settings" (click)="openSettingsEvent.emit()">⚙</button>
+		</nav>
+	</header>
+
+	<section class="hero-row" aria-label="Featured challenge">
+		<article class="hero-card">
+			<div class="hero-copy">
+				<p class="eyebrow">Timeless Mahjong Solitaire</p>
+				<h2>Relax. Match. Conquer.</h2>
+				<p>Challenging boards. Timeless fun. Your next victory awaits.</p>
+				<button type="button" class="primary-action" (click)="start(dailyLayout())">
+					<span aria-hidden="true">▶</span>
+					Play Now
+				</button>
+			</div>
+			<div class="tile-pyramid" aria-hidden="true">
+				@for (tile of heroTiles; track $index) {
+					<span [style.left.px]="tile.left" [style.bottom.px]="tile.bottom" [style.transform]="'rotate(' + tile.rotate + 'deg)'">{{ tile.label }}</span>
+				}
+			</div>
+		</article>
+
+		<article class="daily-card">
+			<div class="daily-head">
+				<strong>▣ Daily Challenge</strong>
+				<span>◷ 12:45:30</span>
+			</div>
+			<div class="daily-body">
+				<button type="button" class="daily-preview" (click)="start(dailyLayout())" [attr.aria-label]="'Play ' + (dailyLayout()?.name ?? 'daily challenge')">
+					@if (dailyLayout(); as layout) {
+						<app-layout-preview [layout]="layout" [alt]="layout.name" />
+					}
+					<span>Play ▶</span>
+				</button>
+				<div class="daily-copy">
+					<h3>{{ dailyLayout()?.name ?? 'Dragon' }}</h3>
+					<div class="stars" aria-label="Four out of five stars">★★★★<span>★</span></div>
+					<span class="pill hard">Hard</span>
+					<p>Beat 04:00 to get</p>
+					<strong>+300 XP <small>xp</small></strong>
+				</div>
+				<div class="dragon-art" aria-hidden="true">龍</div>
+			</div>
+		</article>
+	</section>
+
+	<section class="content-grid">
+		<aside class="sidebar" aria-label="Board categories">
+			<button type="button" class="category-card all" [class.active]="selectedCategory() === 'All Boards'" (click)="selectCategory('All Boards')">
+				<span class="category-icon tiles">▦</span>
+				<span class="category-meta"><strong>All Boards</strong><small>{{ allCompleted() }} / {{ layouts().length }}</small></span>
+				<span class="progress"><i [style.width.%]="allCompletionPercent()"></i></span>
+				<em>{{ allCompletionPercent() }}%</em>
+			</button>
+			@for (category of categories(); track category.name) {
+				<button type="button" class="category-card" [class.active]="selectedCategory() === category.name" (click)="selectCategory(category.name)">
+					<span class="category-icon" [class.panda]="category.icon === 'panda'" [class.temple]="category.icon === 'temple'" [class.star]="category.icon === 'star'" [class.leaf]="category.icon === 'leaf'" [class.diamond]="category.icon === 'diamond'">{{ category.icon === 'panda' ? '●' : category.icon === 'temple' ? '塔' : category.icon === 'star' ? '★' : category.icon === 'leaf' ? '葉' : '◆' }}</span>
+					<span class="category-meta"><strong>{{ category.name | translateGroup }}</strong><small>{{ category.completed }} / {{ category.total }}</small></span>
+					<span class="progress"><i [style.width.%]="categoryPercent(category)"></i></span>
+					<em>{{ categoryPercent(category) }}%</em>
+				</button>
+			}
+
+			<div class="goal-card">
+				<strong>🏆 Collection Goal</strong>
+				<span>Complete all boards</span>
+				<div class="goal-progress"><i [style.width.%]="allCompletionPercent()"></i></div>
+				<small>{{ allCompleted() }} / {{ layouts().length }} ({{ allCompletionPercent() }}%)</small>
+				<div class="reward"><span>Reward</span><strong>Golden Dragon Board</strong></div>
+			</div>
+		</aside>
+
+		<section class="board-panel" aria-label="Boards">
+			<div class="toolbar">
+				<label class="search-box">
+					<span>⌕</span>
+					<input type="search" placeholder="Search boards..." [value]="search()" (input)="search.set($any($event.target).value)" />
+				</label>
+				<button type="button">Difficulty⌄</button>
+				<button type="button">Mode⌄</button>
+				<button type="button">Generator⌄</button>
+				<button type="button">Sort: Newest⌄</button>
+				<span class="toolbar-spacer"></span>
+				<button type="button" class="view-toggle" [class.active]="viewMode() === 'grid'" (click)="viewMode.set('grid')" aria-label="Grid view">▦</button>
+				<button type="button" class="view-toggle" [class.active]="viewMode() === 'list'" (click)="viewMode.set('list')" aria-label="List view">☷</button>
+			</div>
+
+			<div class="board-grid">
+				@for (layout of filteredLayouts(); track layout.id; let index = $index) {
+					<button type="button" class="board-card" (click)="start(layout)" [attr.aria-label]="'Play ' + layout.name">
+						<div class="board-preview">
+							@if (index === 0) { <span class="badge-new">NEW</span> }
+							@if (isCompleted(layout)) { <span class="badge-check">✓</span> }
+							@if (index === 3 || index === 4 || index === 6) { <span class="badge-percent">{{ index === 3 ? '35%' : index === 4 ? '48%' : '15%' }}</span> }
+							<app-layout-preview [layout]="layout" [alt]="layout.name" />
+						</div>
+						<div class="board-info">
+							<div class="board-title-row">
+								<strong>{{ layout.name }}</strong>
+								<span class="pill" [class.easy]="difficulty(layout) === 'Easy'" [class.medium]="difficulty(layout) === 'Medium'" [class.hard]="difficulty(layout) === 'Hard'">{{ difficulty(layout) }}</span>
+							</div>
+							<div class="board-stats">
+								<span class="mini-stars">
+									@for (star of rating(layout); track $index) {
+										<i [class.empty]="star === 0">★</i>
+									}
+								</span>
+								<span>◷ {{ 5 + index % 5 }} min</span>
+								@if (bestTime(layout); as time) {
+									<span>♜ {{ time | duration }}</span>
+								} @else {
+									<span>New</span>
+								}
+							</div>
+						</div>
+					</button>
+				} @empty {
+					<div class="empty-state">No boards match your search.</div>
+				}
+			</div>
+		</section>
+	</section>
+
+	<footer class="home-footer">
+		<span>💡 Tip: Try Daily Challenge for extra XP and achievements!</span>
+		<button type="button" (click)="openHelpEvent.emit()">? How to Play</button>
+	</footer>
+</main>

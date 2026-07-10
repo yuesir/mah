@@ -1,0 +1,754 @@
+:host {
+	display: block;
+	min-height: 100%;
+	color: #173421;
+	background:
+		radial-gradient(circle at 16% 20%, rgb(218 238 208 / 65%), transparent 28rem),
+		radial-gradient(circle at 88% 12%, rgb(245 221 159 / 46%), transparent 22rem),
+		linear-gradient(135deg, #fffdf6 0%, #f6f0df 52%, #fffaf0 100%);
+	font-family: Georgia, "Times New Roman", serif;
+}
+
+button,
+input {
+	font: inherit;
+}
+
+button {
+	cursor: pointer;
+}
+
+.home-shell {
+	width: min(1560px, 100%);
+	min-height: 100vh;
+	margin: 0 auto;
+	padding: 28px 46px 22px;
+}
+
+.home-topbar,
+.hero-row,
+.content-grid,
+.toolbar,
+.home-footer,
+.daily-head,
+.daily-body,
+.board-title-row,
+.board-stats,
+.brand-lockup,
+.top-actions {
+	display: flex;
+}
+
+.home-topbar {
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 18px;
+}
+
+.brand-lockup {
+	align-items: center;
+	gap: 14px;
+
+	h1 {
+		margin: 0;
+		font-size: clamp(1.9rem, 2.3vw, 2.8rem);
+		line-height: 1;
+		color: #22572c;
+		letter-spacing: -0.04em;
+	}
+
+	p {
+		margin: 4px 0 0;
+		font: 600 0.78rem "Trebuchet MS", sans-serif;
+		color: #8a755c;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+}
+
+.brand-mark {
+	color: #c9271c;
+	font-size: clamp(1.9rem, 3vw, 3.2rem);
+	font-weight: 900;
+	line-height: 1;
+	text-shadow: 0 2px 0 #f4d6c8;
+	transform: rotate(-7deg);
+}
+
+.top-actions {
+	gap: 14px;
+
+	button {
+		width: 50px;
+		height: 50px;
+		border: 1px solid #eadfca;
+		border-radius: 12px;
+		background: #fffaf1;
+		color: #68432f;
+		font-size: 1.3rem;
+		box-shadow: 0 8px 18px rgb(92 64 34 / 10%);
+	}
+}
+
+.hero-row {
+	gap: 24px;
+	align-items: stretch;
+	margin-bottom: 16px;
+}
+
+.hero-card,
+.daily-card,
+.sidebar,
+.board-panel,
+.home-footer {
+	border: 1px solid rgb(223 207 174 / 85%);
+	box-shadow: 0 14px 38px rgb(93 73 35 / 12%);
+}
+
+.hero-card {
+	position: relative;
+	min-height: 292px;
+	flex: 1 1 auto;
+	overflow: hidden;
+	border-radius: 18px;
+	background:
+		linear-gradient(90deg, rgb(239 245 221 / 96%) 0%, rgb(217 231 203 / 70%) 44%, rgb(31 72 44 / 28%) 100%),
+		linear-gradient(135deg, #e6edd9, #8daa78);
+
+	&::before,
+	&::after {
+		position: absolute;
+		content: "";
+		pointer-events: none;
+	}
+
+	&::before {
+		inset: 0;
+		background:
+			linear-gradient(115deg, transparent 58%, rgb(35 61 32 / 20%) 59%, transparent 62%),
+			radial-gradient(ellipse at 18% 78%, rgb(134 156 119 / 72%), transparent 24rem),
+			radial-gradient(ellipse at 56% 70%, rgb(60 87 58 / 30%), transparent 18rem);
+	}
+
+	&::after {
+		left: 0;
+		bottom: 0;
+		width: 160px;
+		height: 100%;
+		background:
+			linear-gradient(90deg, rgb(74 118 75 / 24%), transparent),
+			radial-gradient(circle at 34% 20%, #efb5a5 0 6px, transparent 7px),
+			radial-gradient(circle at 18% 44%, #efb5a5 0 5px, transparent 6px),
+			radial-gradient(circle at 48% 64%, #efb5a5 0 6px, transparent 7px);
+	}
+}
+
+.hero-copy {
+	position: relative;
+	z-index: 1;
+	max-width: 460px;
+	padding: 62px 0 40px 84px;
+
+	.eyebrow {
+		margin: 0 0 8px;
+		font: 700 0.78rem "Trebuchet MS", sans-serif;
+		color: #96734d;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+	}
+
+	h2 {
+		margin: 0 0 10px;
+		font-size: clamp(2rem, 3.8vw, 3.4rem);
+		line-height: 1;
+		letter-spacing: -0.05em;
+		color: #142c1e;
+	}
+
+	p:not(.eyebrow) {
+		max-width: 360px;
+		margin: 0 0 24px;
+		font: 1.05rem/1.45 "Trebuchet MS", sans-serif;
+		color: #24402f;
+	}
+}
+
+.primary-action,
+.daily-preview span {
+	background: linear-gradient(180deg, #62a951, #35772f);
+	color: #fff;
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 35%), 0 14px 22px rgb(37 94 42 / 24%);
+}
+
+.primary-action {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 180px;
+	padding: 15px 28px;
+	border: 0;
+	border-radius: 14px;
+	font: 800 1.15rem "Trebuchet MS", sans-serif;
+}
+
+.tile-pyramid {
+	position: absolute;
+	right: 42px;
+	bottom: 25px;
+	z-index: 1;
+	width: min(440px, 44%);
+	height: 245px;
+
+	span {
+		position: absolute;
+		display: grid;
+		place-items: center;
+		width: 38px;
+		height: 50px;
+		border: 1px solid #a18b62;
+		border-radius: 6px;
+		background: linear-gradient(135deg, #fff8df, #d7c597);
+		color: #a02418;
+		font-weight: 900;
+		box-shadow: 5px 8px 10px rgb(62 48 23 / 32%);
+	}
+}
+
+.daily-card {
+	flex: 0 0 595px;
+	padding: 20px;
+	border-radius: 18px;
+	background: linear-gradient(135deg, #fffaf0, #f8ead0);
+}
+
+.daily-head {
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+	font: 700 0.9rem "Trebuchet MS", sans-serif;
+
+	span {
+		color: #9c4a28;
+	}
+}
+
+.daily-body {
+	gap: 20px;
+	align-items: stretch;
+}
+
+.daily-preview {
+	position: relative;
+	flex: 0 0 220px;
+	overflow: hidden;
+	padding: 0;
+	border: 0;
+	border-radius: 12px;
+	background: #173d3d;
+
+	app-layout-preview {
+		display: block;
+		height: 155px;
+		padding: 12px 14px 42px;
+	}
+
+	span {
+		position: absolute;
+		inset: auto 0 0;
+		padding: 14px;
+		font: 900 1rem "Trebuchet MS", sans-serif;
+	}
+}
+
+.daily-copy {
+	flex: 1;
+	padding-top: 8px;
+
+	h3 {
+		margin: 0 0 7px;
+		font-size: 1.55rem;
+	}
+
+	p {
+		margin: 14px 0 5px;
+		font: 0.95rem "Trebuchet MS", sans-serif;
+	}
+
+	strong {
+		font: 900 1rem "Trebuchet MS", sans-serif;
+	}
+}
+
+.stars,
+.mini-stars {
+	color: #f3a51b;
+	letter-spacing: 0.06em;
+
+	span,
+	.empty {
+		color: #d5c8ad;
+	}
+}
+
+.pill {
+	display: inline-flex;
+	align-items: center;
+	min-height: 22px;
+	padding: 3px 8px;
+	border-radius: 6px;
+	font: 800 0.72rem "Trebuchet MS", sans-serif;
+	color: #b45721;
+	background: #fff1d7;
+	border: 1px solid #f3c287;
+
+	&.easy {
+		color: #2a7e34;
+		background: #e7f5db;
+		border-color: #a8d490;
+	}
+
+	&.medium {
+		color: #b86b19;
+		background: #fff2d9;
+		border-color: #efc36d;
+	}
+
+	&.hard {
+		color: #df432a;
+		background: #fff0e9;
+		border-color: #ee9c88;
+	}
+}
+
+.dragon-art {
+	display: grid;
+	place-items: center;
+	width: 128px;
+	font-size: 6rem;
+	font-weight: 900;
+	color: rgb(72 126 60 / 56%);
+	filter: drop-shadow(0 12px 9px rgb(122 87 45 / 18%));
+}
+
+.content-grid {
+	gap: 24px;
+	align-items: stretch;
+}
+
+.sidebar {
+	flex: 0 0 296px;
+	align-self: start;
+	padding: 12px;
+	border-radius: 16px;
+	background: rgb(255 252 244 / 90%);
+}
+
+.category-card {
+	position: relative;
+	display: grid;
+	grid-template-columns: 44px 1fr 46px;
+	grid-template-areas: "icon meta percent" "icon progress percent";
+	gap: 4px 12px;
+	align-items: center;
+	width: 100%;
+	min-height: 64px;
+	padding: 8px 10px;
+	border: 0;
+	border-radius: 12px;
+	background: transparent;
+	color: #223a2b;
+	text-align: left;
+
+	&.active,
+	&:hover {
+		background: #f5edda;
+	}
+
+	em {
+		grid-area: percent;
+		font: 700 0.75rem "Trebuchet MS", sans-serif;
+		font-style: normal;
+		justify-self: end;
+	}
+}
+
+.category-icon {
+	grid-area: icon;
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	background: #edf5dd;
+	color: #317735;
+	font-weight: 900;
+
+	&.panda {
+		color: #111;
+		background: #edf6ee;
+	}
+
+	&.temple {
+		color: #476d75;
+		background: #e8f1ef;
+	}
+
+	&.star {
+		color: #d79415;
+		background: #fff3d6;
+	}
+
+	&.leaf {
+		color: #5e8d42;
+		background: #edf6df;
+	}
+
+	&.diamond {
+		color: #865bc6;
+		background: #f0e9fb;
+	}
+}
+
+.category-meta {
+	grid-area: meta;
+	display: grid;
+	gap: 2px;
+	font-family: "Trebuchet MS", sans-serif;
+
+	strong {
+		font-size: 0.88rem;
+	}
+
+	small {
+		color: #6d6d64;
+	}
+}
+
+.progress,
+.goal-progress {
+	display: block;
+	overflow: hidden;
+	height: 4px;
+	border-radius: 999px;
+	background: #e7d9c2;
+
+	i {
+		display: block;
+		height: 100%;
+		border-radius: inherit;
+		background: linear-gradient(90deg, #4b8d46, #86b96e);
+	}
+}
+
+.progress {
+	grid-area: progress;
+}
+
+.goal-card {
+	margin-top: 16px;
+	padding: 16px;
+	border-radius: 14px;
+	background: linear-gradient(135deg, #fff8e9, #f7e4bd);
+	border: 1px solid #edd4a2;
+	font-family: "Trebuchet MS", sans-serif;
+
+	strong,
+	span,
+	small {
+		display: block;
+	}
+
+	span {
+		margin-top: 8px;
+		font-size: 0.86rem;
+	}
+
+	small {
+		margin-top: 8px;
+		color: #7e694d;
+	}
+}
+
+.reward {
+	margin-top: 12px;
+
+	span {
+		font-size: 0.76rem;
+		font-weight: 800;
+	}
+}
+
+.board-panel {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 14px;
+	border-radius: 18px;
+	background: rgb(255 253 248 / 88%);
+}
+
+.toolbar {
+	align-items: center;
+	gap: 14px;
+	margin-bottom: 20px;
+	font-family: "Trebuchet MS", sans-serif;
+
+	button,
+	.search-box {
+		height: 46px;
+		border: 1px solid #eadfce;
+		border-radius: 10px;
+		background: #fffdf9;
+		box-shadow: 0 6px 14px rgb(78 55 25 / 6%);
+	}
+
+	button {
+		padding: 0 18px;
+		color: #342a1c;
+	}
+}
+
+.search-box {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: min(260px, 100%);
+	padding: 0 14px;
+	color: #8b7b67;
+
+	input {
+		width: 100%;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		color: #342a1c;
+	}
+}
+
+.toolbar-spacer {
+	flex: 1;
+}
+
+.view-toggle.active {
+	color: #267331;
+	background: #eef6e7;
+}
+
+.board-grid {
+	display: grid;
+	grid-template-columns: repeat(5, minmax(150px, 1fr));
+	gap: 18px;
+}
+
+.board-card {
+	overflow: hidden;
+	padding: 0;
+	border: 1px solid #eadfcf;
+	border-radius: 13px;
+	background: #fffdf8;
+	text-align: left;
+	box-shadow: 0 10px 24px rgb(83 63 30 / 9%);
+	transition: transform 160ms ease, box-shadow 160ms ease;
+
+	&:hover,
+	&:focus-visible {
+		transform: translateY(-4px);
+		box-shadow: 0 18px 30px rgb(64 49 24 / 15%);
+	}
+}
+
+.board-preview {
+	position: relative;
+	height: 140px;
+	padding: 12px;
+	background: linear-gradient(135deg, #0f4445, #143733);
+
+	app-layout-preview {
+		height: 100%;
+		filter: drop-shadow(0 8px 8px rgb(0 0 0 / 22%));
+	}
+}
+
+.badge-new,
+.badge-check,
+.badge-percent {
+	position: absolute;
+	z-index: 1;
+	font-family: "Trebuchet MS", sans-serif;
+	font-weight: 900;
+}
+
+.badge-new {
+	top: 10px;
+	left: 10px;
+	padding: 5px 7px;
+	border-radius: 5px;
+	background: #e44d2e;
+	color: #fff;
+	font-size: 0.7rem;
+}
+
+.badge-check {
+	top: 9px;
+	right: 9px;
+	display: grid;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: #eff8e4;
+	color: #2f8037;
+}
+
+.badge-percent {
+	top: 11px;
+	right: 11px;
+	color: #fff;
+	font-size: 0.78rem;
+	text-shadow: 0 1px 3px #000;
+}
+
+.board-info {
+	padding: 12px 14px 13px;
+	font-family: "Trebuchet MS", sans-serif;
+}
+
+.board-title-row {
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 9px;
+
+	strong {
+		font-size: 1rem;
+		color: #1f2b20;
+	}
+}
+
+.board-stats {
+	align-items: center;
+	gap: 10px;
+	color: #6d604f;
+	font-size: 0.76rem;
+}
+
+.mini-stars {
+	white-space: nowrap;
+
+	i {
+		font-style: normal;
+	}
+}
+
+.view-list .board-grid {
+	grid-template-columns: repeat(2, minmax(260px, 1fr));
+
+	.board-card {
+		display: grid;
+		grid-template-columns: 180px 1fr;
+	}
+
+	.board-preview {
+		height: 118px;
+	}
+}
+
+.empty-state {
+	grid-column: 1 / -1;
+	padding: 40px;
+	border: 1px dashed #dac8a9;
+	border-radius: 14px;
+	color: #806c4c;
+	text-align: center;
+}
+
+.home-footer {
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-top: 24px;
+	padding: 14px 18px;
+	border-radius: 14px;
+	background: rgb(255 253 248 / 90%);
+	font: 0.9rem "Trebuchet MS", sans-serif;
+
+	button {
+		padding: 8px 16px;
+		border: 1px solid #eadfce;
+		border-radius: 10px;
+		background: #fffaf1;
+		font-weight: 800;
+		color: #604631;
+	}
+}
+
+@media (width <= 1200px) {
+	.home-shell {
+		padding: 22px;
+	}
+
+	.hero-row,
+	.content-grid {
+		flex-direction: column;
+	}
+
+	.daily-card,
+	.sidebar {
+		flex-basis: auto;
+	}
+
+	.sidebar {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(220px, 1fr));
+		gap: 10px;
+		width: 100%;
+	}
+
+	.goal-card {
+		margin-top: 0;
+	}
+
+	.board-grid {
+		grid-template-columns: repeat(3, minmax(170px, 1fr));
+	}
+}
+
+@media (width <= 760px) {
+	.home-shell {
+		padding: 16px;
+	}
+
+	.home-topbar,
+	.daily-body,
+	.toolbar,
+	.home-footer {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.hero-copy {
+		padding: 38px 28px 180px;
+	}
+
+	.tile-pyramid {
+		left: 26px;
+		right: auto;
+		width: 320px;
+		transform: scale(0.72);
+		transform-origin: bottom left;
+	}
+
+	.daily-preview {
+		flex-basis: auto;
+	}
+
+	.sidebar,
+	.board-grid,
+	.view-list .board-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.toolbar button,
+	.search-box {
+		width: 100%;
+	}
+}

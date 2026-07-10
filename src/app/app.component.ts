@@ -7,6 +7,7 @@ import { log } from './model/log';
 import type { LoadLayout } from './model/types';
 import { parseImportString } from './model/import';
 import { GameComponent } from './components/game/game-component.component';
+import { HomeComponent, type HomeStartEvent } from './components/home/home.component';
 
 type onWindowBlur = (callback: () => void) => void;
 
@@ -16,7 +17,7 @@ type onWindowBlur = (callback: () => void) => void;
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss'],
 	host: { '(document:keydown)': 'handleKeyDownEvent($event)' },
-	imports: [GameComponent]
+	imports: [GameComponent, HomeComponent]
 })
 export class AppComponent implements OnInit {
 	readonly gameComponent = viewChild.required<GameComponent>('gameComponent');
@@ -26,6 +27,7 @@ export class AppComponent implements OnInit {
 	readonly ngZone = inject(NgZone);
 	readonly meta = inject(Meta);
 	loading = true;
+	gameVisible: boolean = false;
 	editorSubscription?: OutputRefSubscription;
 	editorVisible: boolean = false;
 	editorLoading: boolean = false;
@@ -74,6 +76,21 @@ export class AppComponent implements OnInit {
 		}
 	}
 
+	startHomeGame(event: HomeStartEvent): void {
+		this.gameVisible = true;
+		this.gameComponent().startGame(event);
+	}
+
+	openHomeHelp(): void {
+		this.gameVisible = true;
+		this.gameComponent().help().visible.set(true);
+	}
+
+	openHomeSettings(): void {
+		this.gameVisible = true;
+		this.gameComponent().settings().visible.set(true);
+	}
+
 	toggleEditor(): void {
 		if (!environment.editor || this.editorLoading) {
 			return;
@@ -101,7 +118,8 @@ export class AppComponent implements OnInit {
 		if (window.location.search) {
 			this.clearSearchParameters();
 		}
-		if (this.app.game.isIdle() || this.layoutService.selectBoardID) {
+		if (this.layoutService.selectBoardID) {
+			this.gameVisible = true;
 			this.gameComponent().start();
 		}
 	}
