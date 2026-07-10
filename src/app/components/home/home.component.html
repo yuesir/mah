@@ -88,10 +88,29 @@
 					<span>⌕</span>
 					<input type="search" placeholder="Search boards..." [value]="search()" (input)="updateSearch($any($event.target).value)" />
 				</label>
-				<button type="button">Difficulty⌄</button>
-				<button type="button">Mode⌄</button>
-				<button type="button">Generator⌄</button>
-				<button type="button">Sort: Newest⌄</button>
+				@if (availableDifficulties().length > 0) {
+					<div class="filter-control">
+						<span class="filter-label">Difficulty</span>
+						<label class="toolbar-select" aria-label="Difficulty">
+							<select [value]="difficultyFilter()" (change)="updateDifficultyFilter($any($event.target).value)">
+								<option value="All">All</option>
+								@for (difficultyOption of availableDifficulties(); track difficultyOption) {
+									<option [value]="difficultyOption">{{ difficultyOption }}</option>
+								}
+							</select>
+						</label>
+					</div>
+				}
+				<div class="filter-control">
+					<span class="filter-label">Sort</span>
+					<label class="toolbar-select" aria-label="Sort">
+						<select [value]="sortMode()" (change)="updateSortMode($any($event.target).value)">
+							<option value="default">Default</option>
+							<option value="nameAsc">Name A-Z</option>
+							<option value="nameDesc">Name Z-A</option>
+						</select>
+					</label>
+				</div>
 				<span class="toolbar-spacer"></span>
 				<button type="button" class="view-toggle" [class.active]="viewMode() === 'grid'" (click)="viewMode.set('grid')" aria-label="Grid view">▦</button>
 				<button type="button" class="view-toggle" [class.active]="viewMode() === 'list'" (click)="viewMode.set('list')" aria-label="List view">☷</button>

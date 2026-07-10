@@ -22,6 +22,10 @@ interface CategorySummary {
 	completed: number;
 }
 
+type Difficulty = 'Easy' | 'Medium' | 'Hard';
+type DifficultyFilter = 'All' | Difficulty;
+type SortMode = 'default' | 'nameAsc' | 'nameDesc';
+
 @Component({
 	selector: 'app-home',
 	changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,9 +43,12 @@ export class HomeComponent {
 	readonly layouts = computed(() => this.layoutService.layoutItems());
 	readonly search = signal('');
 	readonly selectedCategory = signal('All Boards');
+	readonly difficultyFilter = signal<DifficultyFilter>('All');
+	readonly sortMode = signal<SortMode>('default');
 	readonly currentPage = signal(1);
 	readonly viewMode = signal<'grid' | 'list'>('grid');
 	readonly pageSize = 30;
+	readonly difficultyOrder: Array<Difficulty> = ['Easy', 'Medium', 'Hard'];
 	readonly featuredNames = ['Dragon', 'Turtle', 'Kitty', 'Monkey', 'Tiger', 'Rooster', 'Snake', 'Boar', 'Fly', 'OX'];
 	readonly heroTiles = ['春', '發', '竹', '萬', '南', '梅', '九', '東', '北', '中', '蘭', '一', '西', '白', '二', '三', '四', '五', '六', '七', '八']
 		.map((label, index) => {
@@ -74,11 +81,19 @@ export class HomeComponent {
 	filteredLayouts(): Array<Layout> {
 		const query = this.search().trim().toLowerCase();
 		const selectedCategory = this.selectedCategory();
-		return this.layouts().filter(layout => {
+		const difficultyFilter = this.difficultyFilter();
+		const filtered = this.layouts().filter(layout => {
 			const matchesCategory = selectedCategory === 'All Boards' || layout.category === selectedCategory;
 			const matchesQuery = !query || layout.name.toLowerCase().includes(query) || layout.category.toLowerCase().includes(query);
-			return matchesCategory && matchesQuery;
+			const matchesDifficulty = difficultyFilter === 'All' || this.difficulty(layout) === difficultyFilter;
+			return matchesCategory && matchesQuery && matchesDifficulty;
 		});
+		return this.sortLayouts(filtered);
+	}
+
+	availableDifficulties(): Array<Difficulty> {
+		const difficulties = new Set(this.layouts().map(layout => this.difficulty(layout)));
+		return this.difficultyOrder.filter(difficulty => difficulties.has(difficulty));
 	}
 
 	paginatedLayouts(): Array<Layout> {
@@ -122,7 +137,7 @@ export class HomeComponent {
 		return this.storage.getScore(layout.id)?.bestTime;
 	}
 
-	difficulty(layout: Layout): 'Easy' | 'Medium' | 'Hard' {
+	difficulty(layout: Layout): Difficulty {
 		const count = layout.mapping.length;
 		if (count >= 120) {
 			return 'Hard';
@@ -157,9 +172,41 @@ export class HomeComponent {
 		this.currentPage.set(1);
 	}
 
+	updateDifficultyFilter(difficulty: string): void {
+		this.difficultyFilter.set(this.isDifficultyFilter(difficulty) ? difficulty : 'All');
+		this.currentPage.set(1);
+	}
+
+	updateSortMode(sortMode: string): void {
+		this.sortMode.set(this.isSortMode(sortMode) ? sortMode : 'default');
+		this.currentPage.set(1);
+	}
+
 	setPage(page: number): void {
 		const nextPage = Math.min(Math.max(page, 1), this.totalPages());
 		this.currentPage.set(nextPage);
+	}
+
+	private sortLayouts(layouts: Array<Layout>): Array<Layout> {
+		switch (this.sortMode()) {
+			case 'nameAsc': {
+				return [...layouts].sort((a, b) => a.name.localeCompare(b.name));
+			}
+			case 'nameDesc': {
+				return [...layouts].sort((a, b) => b.name.localeCompare(a.name));
+			}
+			default: {
+				return layouts;
+			}
+		}
+	}
+
+	private isDifficultyFilter(value: string): value is DifficultyFilter {
+		return value === 'All' || this.difficultyOrder.includes(value as Difficulty);
+	}
+
+	private isSortMode(value: string): value is SortMode {
+		return ['default', 'nameAsc', 'nameDesc'].includes(value);
 	}
 
 	private findLayout(name: string): Layout | undefined {
