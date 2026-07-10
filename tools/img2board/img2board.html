@@ -285,11 +285,11 @@
 			<fieldset>
 				<legend>判定方式</legend>
 				<div class="seg" id="modeSeg">
-					<button data-mode="alpha" class="active">Alpha 通道</button>
-					<button data-mode="luma">亮度阈值</button>
+					<button type="button" data-mode="alpha" class="active">Alpha 通道</button>
+					<button type="button" data-mode="luma">亮度阈值</button>
 				</div>
 				<div class="control" id="threshCtrl" style="margin-top:10px">
-					<label>亮度阈值 <span class="val" id="threshVal">128</span></label>
+					<label for="thresh">亮度阈值 <span class="val" id="threshVal">128</span></label>
 					<input type="range" id="thresh" min="1" max="254" value="128">
 					<div class="hint">像素亮度 ≥ 此值视为前景（仅"亮度阈值"模式生效）</div>
 				</div>
@@ -298,11 +298,11 @@
 			<fieldset>
 				<legend>网格尺寸</legend>
 				<div class="control">
-					<label>宽度（列 x） <span class="val" id="colsVal">30</span></label>
+					<label for="cols">宽度（列 x） <span class="val" id="colsVal">30</span></label>
 					<input type="range" id="cols" min="8" max="56" value="30">
 				</div>
 				<div class="control">
-					<label>高度（行 y） <span class="val" id="rowsVal">16</span></label>
+					<label for="rows">高度（行 y） <span class="val" id="rowsVal">16</span></label>
 					<input type="range" id="rows" min="8" max="36" value="16">
 				</div>
 			</fieldset>
@@ -310,13 +310,13 @@
 			<fieldset>
 				<legend>后处理</legend>
 				<div class="control">
-					<label>边缘裁剪 <span class="val" id="padVal">0</span></label>
+					<label for="pad">边缘裁剪 <span class="val" id="padVal">0</span></label>
 					<input type="range" id="pad" min="0" max="5" value="0">
 					<div class="hint">裁掉外圈 N 格空白边缘</div>
 				</div>
 				<div class="seg" id="evenSeg">
-					<button data-even="trim" class="active">裁剪凑偶</button>
-					<button data-even="pad">补角凑偶</button>
+					<button type="button" data-even="trim" class="active">裁剪凑偶</button>
+					<button type="button" data-even="pad">补角凑偶</button>
 				</div>
 				<div class="hint">牌数为奇数时：删最边缘一格，或在右下角补一格</div>
 			</fieldset>
@@ -324,15 +324,15 @@
 			<fieldset>
 				<legend>关卡信息</legend>
 				<div class="control">
-					<label>名称</label>
+					<label for="boardName">名称</label>
 					<input type="text" id="boardName" value="From Image" placeholder="关卡名">
 				</div>
 				<div class="control">
-					<label>分类</label>
+					<label for="boardCat">分类</label>
 					<input type="text" id="boardCat" value="Custom" placeholder="分类">
 				</div>
 				<div class="control">
-					<label>作者</label>
+					<label for="boardBy">作者</label>
 					<input type="text" id="boardBy" value="" placeholder="可选">
 				</div>
 			</fieldset>
@@ -348,7 +348,7 @@
 					<div class="v" id="statEven">—</div>
 				</div>
 			</div>
-			<button class="btn-primary" id="downloadBtn" disabled>下载 .mah 文件</button>
+			<button type="button" class="btn-primary" id="downloadBtn" disabled>下载 .mah 文件</button>
 		</div>
 
 		<!-- 右侧预览 -->

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 import { MODE_SOLVABLE, type BUILD_MODE_ID } from '../../model/builder';
 import { GAME_MODE_STANDARD, type GAME_MODE_ID } from '../../model/consts';
 import type { Layout } from '../../model/types';
@@ -36,9 +36,12 @@ export class HomeComponent {
 	readonly app = inject(AppService);
 	readonly layoutService = inject(LayoutService);
 	readonly storage = inject(LocalstorageService);
+	readonly layouts = computed(() => this.layoutService.layoutItems());
 	readonly search = signal('');
 	readonly selectedCategory = signal('All Boards');
+	readonly currentPage = signal(1);
 	readonly viewMode = signal<'grid' | 'list'>('grid');
+	readonly pageSize = 30;
 	readonly featuredNames = ['Dragon', 'Turtle', 'Kitty', 'Monkey', 'Tiger', 'Rooster', 'Snake', 'Boar', 'Fly', 'OX'];
 	readonly heroTiles = ['春', '發', '竹', '萬', '南', '梅', '九', '東', '北', '中', '蘭', '一', '西', '白', '二', '三', '四', '五', '六', '七', '八']
 		.map((label, index) => {
@@ -71,19 +74,28 @@ export class HomeComponent {
 	filteredLayouts(): Array<Layout> {
 		const query = this.search().trim().toLowerCase();
 		const selectedCategory = this.selectedCategory();
-		return this.featuredLayouts().filter(layout => {
+		return this.layouts().filter(layout => {
 			const matchesCategory = selectedCategory === 'All Boards' || layout.category === selectedCategory;
 			const matchesQuery = !query || layout.name.toLowerCase().includes(query) || layout.category.toLowerCase().includes(query);
 			return matchesCategory && matchesQuery;
 		});
 	}
 
-	dailyLayout(): Layout | undefined {
-		return this.findLayout('Dragon') ?? this.layouts()[0];
+	paginatedLayouts(): Array<Layout> {
+		const startIndex = (this.currentPage() - 1) * this.pageSize;
+		return this.filteredLayouts().slice(startIndex, startIndex + this.pageSize);
 	}
 
-	layouts(): Array<Layout> {
-		return this.layoutService.layouts.items;
+	totalPages(): number {
+		return Math.max(1, Math.ceil(this.filteredLayouts().length / this.pageSize));
+	}
+
+	hasPagination(): boolean {
+		return this.filteredLayouts().length > this.pageSize;
+	}
+
+	dailyLayout(): Layout | undefined {
+		return this.findLayout('Dragon') ?? this.layouts()[0];
 	}
 
 	featuredLayouts(): Array<Layout> {
@@ -137,6 +149,17 @@ export class HomeComponent {
 
 	selectCategory(category: string): void {
 		this.selectedCategory.set(category);
+		this.currentPage.set(1);
+	}
+
+	updateSearch(query: string): void {
+		this.search.set(query);
+		this.currentPage.set(1);
+	}
+
+	setPage(page: number): void {
+		const nextPage = Math.min(Math.max(page, 1), this.totalPages());
+		this.currentPage.set(nextPage);
 	}
 
 	private findLayout(name: string): Layout | undefined {
@@ -153,12 +176,24 @@ export class HomeComponent {
 
 	private categoryIcon(category: string): string {
 		switch (category) {
-			case 'Animals': return 'panda';
-			case 'Architecture': return 'temple';
-			case 'Symbols': return 'star';
-			case 'Plants': return 'leaf';
-			case 'Shapes': return 'diamond';
-			default: return 'tiles';
+			case 'Animals': {
+				return 'panda';
+			}
+			case 'Architecture': {
+				return 'temple';
+			}
+			case 'Symbols': {
+				return 'star';
+			}
+			case 'Plants': {
+				return 'leaf';
+			}
+			case 'Shapes': {
+				return 'diamond';
+			}
+			default: {
+				return 'tiles';
+			}
 		}
 	}
 }

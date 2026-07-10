@@ -1,4 +1,4 @@
-<app-layout-list (startEvent)="onStart($event)" [layouts]="this.layoutService.layouts.items" />
+<app-layout-list (startEvent)="onStart($event)" [layouts]="this.layoutService.layoutItems()" />
 <div class="choose-buttons">
 	<div class="generator">
 		<button type="button" class="info-label"

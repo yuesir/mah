@@ -60,6 +60,7 @@ export class LayoutListComponent implements OnInit, OnChanges {
 		const groups = this.groups();
 		return groups[this.selectedGroupIndex()] ?? groups[0];
 	});
+
 	readonly randomMirrorX = signal('random');
 	readonly randomMirrorY = signal('random');
 	readonly randomGroup: RandomLayoutGroup = {
@@ -76,6 +77,7 @@ export class LayoutListComponent implements OnInit, OnChanges {
 		this.randomMirrorX.set(this.storage.getLastMirrorX() ?? 'random');
 		this.randomMirrorY.set(this.storage.getLastMirrorY() ?? 'random');
 		this.buildRandomGroup();
+		this.refresh();
 	}
 
 	buildRandomGroup() {
@@ -157,10 +159,9 @@ export class LayoutListComponent implements OnInit, OnChanges {
 			// 默认选中「上次玩关卡所在分类」（无则选中第一个分类）
 			this.selectedGroupIndex.set(0);
 			if (id) {
-				const groups = this.groups();
-				for (let gi = 0; gi < groups.length; gi++) {
-					if (groups[gi].layouts.some(it => it.layout.id === id)) {
-						this.selectedGroupIndex.set(gi);
+				for (const [index, group] of this.groups().entries()) {
+					if (group.layouts.some(it => it.layout.id === id)) {
+						this.selectedGroupIndex.set(index);
 						break;
 					}
 				}

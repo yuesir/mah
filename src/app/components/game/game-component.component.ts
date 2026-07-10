@@ -530,12 +530,12 @@ export class GameComponent {
 			const unplayedInCat = items.filter(l => l.category === category && l.id !== currentId && !hasWon(l.id));
 			if (unplayedInCat.length > 0) {
 				// 取列表顺序的下一个未玩关卡（稳定、可预期）
-				const startIdx = items.findIndex(l => l.id === currentId);
+				const startIndex = items.findIndex(l => l.id === currentId);
 				const ordered = items
-					.map((l, i) => ({ l, i }))
+					.map((l, index) => ({ l, index }))
 					.filter(({ l }) => l.category === category && l.id !== currentId && !hasWon(l.id));
 				// 优先选当前关卡之后的，没有则用第一个
-				const after = ordered.find(({ i }) => i > startIdx);
+				const after = ordered.find(({ index }) => index > startIndex);
 				const pick = (after ?? ordered[0]).l;
 				this.game.reset();
 				this.game.start(pick, this.game.board.buildMode, this.game.mode);

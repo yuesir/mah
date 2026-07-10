@@ -661,6 +661,31 @@ button {
 	text-align: center;
 }
 
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	margin-top: 20px;
+	font: 800 0.9rem "Trebuchet MS", sans-serif;
+	color: #604631;
+
+	button {
+		min-width: 104px;
+		padding: 10px 16px;
+		border: 1px solid #eadfce;
+		border-radius: 10px;
+		background: #fffaf1;
+		color: #604631;
+		font-weight: 800;
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.48;
+		}
+	}
+}
+
 .home-footer {
 	align-items: center;
 	justify-content: space-between;

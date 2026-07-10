@@ -86,7 +86,7 @@
 			<div class="toolbar">
 				<label class="search-box">
 					<span>⌕</span>
-					<input type="search" placeholder="Search boards..." [value]="search()" (input)="search.set($any($event.target).value)" />
+					<input type="search" placeholder="Search boards..." [value]="search()" (input)="updateSearch($any($event.target).value)" />
 				</label>
 				<button type="button">Difficulty⌄</button>
 				<button type="button">Mode⌄</button>
@@ -98,7 +98,7 @@
 			</div>
 
 			<div class="board-grid">
-				@for (layout of filteredLayouts(); track layout.id; let index = $index) {
+				@for (layout of paginatedLayouts(); track layout.id; let index = $index) {
 					<button type="button" class="board-card" (click)="start(layout)" [attr.aria-label]="'Play ' + layout.name">
 						<div class="board-preview">
 							@if (index === 0) { <span class="badge-new">NEW</span> }
@@ -130,6 +130,14 @@
 					<div class="empty-state">No boards match your search.</div>
 				}
 			</div>
+
+			@if (hasPagination()) {
+				<nav class="pagination" aria-label="Board pagination">
+					<button type="button" (click)="setPage(currentPage() - 1)" [disabled]="currentPage() === 1">Previous</button>
+					<span>Page {{ currentPage() }} / {{ totalPages() }}</span>
+					<button type="button" (click)="setPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()">Next</button>
+				</nav>
+			}
 		</section>
 	</section>
 

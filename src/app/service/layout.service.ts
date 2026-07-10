@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Service } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { firstValueFrom, catchError, of } from 'rxjs';
 import { expandMapping, mappingToID } from '../model/mapping';
@@ -25,6 +25,7 @@ export class LayoutService {
 	private readonly storage = inject(LocalstorageService);
 
 	layouts: Layouts = { items: [] };
+	readonly layoutItems = signal<Array<Layout>>([]);
 	loaded = false;
 	selectBoardID?: string | null;
 
@@ -47,18 +48,18 @@ export class LayoutService {
 				items.push(layout);
 			}
 		}
-		this.layouts = { items };
+		this.setLayouts(items);
 		this.loaded = true;
 		return this.layouts;
 	}
 
 	removeAllCustomLayouts(): void {
-		this.layouts.items = this.layouts.items.filter(l => !l.custom);
+		this.setLayouts(this.layouts.items.filter(l => !l.custom));
 		this.storage.storeCustomLayouts();
 	}
 
 	removeCustomLayout(ids: Array<string>): void {
-		this.layouts.items = this.layouts.items.filter(l => !l.custom || !ids.includes(l.id));
+		this.setLayouts(this.layouts.items.filter(l => !l.custom || !ids.includes(l.id)));
 		const customLayouts = (this.storage.getCustomLayouts() || []).filter(l => !ids.includes(l.id));
 		this.storage.storeCustomLayouts(customLayouts.length === 0 ? undefined : customLayouts);
 	}
@@ -83,7 +84,12 @@ export class LayoutService {
 	storeCustomBoards(list: Array<LoadLayout>) {
 		const customLayouts = this.loadCustomLayouts();
 		this.storage.storeCustomLayouts([...customLayouts, ...list]);
-		this.layouts.items = [...this.layouts.items, ...list.map(layout => this.expandLayout(layout, true))];
+		this.setLayouts([...this.layouts.items, ...list.map(layout => this.expandLayout(layout, true))]);
+	}
+
+	private setLayouts(items: Array<Layout>): void {
+		this.layouts = { items };
+		this.layoutItems.set(items);
 	}
 
 	generatePreview(mapping: Mapping): SafeUrlSVG {
