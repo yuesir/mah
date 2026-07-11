@@ -80,6 +80,7 @@ html {
 	--svg-color-3: #35a302;
 
 	background-color: var(--main-bg-color);
+	height: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -306,6 +307,8 @@ html {
 }
 
 body {
+	margin: 0;
+	min-height: 100%;
 	font-family: variables.$text-font;
 	background-color: var(--main-bg-color);
 	font-size: variables.$base-font-size;

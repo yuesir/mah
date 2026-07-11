@@ -77,8 +77,10 @@ export class AppComponent implements OnInit {
 	}
 
 	startHomeGame(event: HomeStartEvent): void {
+		this.resetViewportScroll();
 		this.gameVisible = true;
 		this.gameComponent().startGame(event);
+		window.requestAnimationFrame(() => this.resetViewportScroll());
 	}
 
 	openHomeHelp(): void {
@@ -120,8 +122,13 @@ export class AppComponent implements OnInit {
 		}
 		if (this.layoutService.selectBoardID) {
 			this.gameVisible = true;
+			this.resetViewportScroll();
 			this.gameComponent().start();
 		}
+	}
+
+	private resetViewportScroll(): void {
+		window.scrollTo({ left: 0, top: 0, behavior: 'instant' });
 	}
 
 	private clearSearchParameters() {
