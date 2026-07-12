@@ -7,11 +7,6 @@
 				<p>Relax. Match. Conquer.</p>
 			</div>
 		</div>
-		<nav class="top-actions" aria-label="Home actions">
-			<button type="button" title="Achievements" aria-label="Achievements">♜</button>
-			<button type="button" title="Statistics" aria-label="Statistics">▥</button>
-			<button type="button" title="Settings" aria-label="Settings" (click)="openSettingsEvent.emit()">⚙</button>
-		</nav>
 	</header>
 
 	<section class="hero-row" aria-label="Featured challenge">
@@ -35,7 +30,6 @@
 		<article class="daily-card">
 			<div class="daily-head">
 				<strong>▣ Daily Challenge</strong>
-				<span>◷ 12:45:30</span>
 			</div>
 			<div class="daily-body">
 				<button type="button" class="daily-preview" (click)="start(dailyLayout())" [attr.aria-label]="'Play ' + (dailyLayout()?.name ?? 'daily challenge')">
@@ -46,12 +40,13 @@
 				</button>
 				<div class="daily-copy">
 					<h3>{{ dailyLayout()?.name ?? 'Dragon' }}</h3>
-					<div class="stars" aria-label="Four out of five stars">★★★★<span>★</span></div>
-					<span class="pill hard">Hard</span>
+					<div class="stars-row">
+						<div class="stars" aria-label="Four out of five stars">★★★★<span>★</span></div>
+						<span class="pill hard">Hard</span>
+					</div>
 					<p>Beat 04:00 to get</p>
 					<strong>+300 XP <small>xp</small></strong>
 				</div>
-				<div class="dragon-art" aria-hidden="true">龍</div>
 			</div>
 		</article>
 	</section>

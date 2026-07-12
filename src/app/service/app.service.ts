@@ -42,15 +42,22 @@ export class AppService implements OnDestroy {
 	}
 
 	setLang(): void {
-		const userLang =
-			(!this.settings.lang || this.settings.lang === LangAuto) ?
-				(navigator.language.split('-', 1)[0] || DEFAULT_LANGUAGE).toLowerCase() : // use navigator lang if available
-				this.settings.lang;
-		if (Object.keys(LANGUAGES).includes(userLang)) {
-			this.translate.use(userLang);
+		let userLang: string;
+		if (!this.settings.lang || this.settings.lang === LangAuto) {
+			// Pick the best match from the browser's full language preference list
+			const available = Object.keys(LANGUAGES);
+			userLang = DEFAULT_LANGUAGE;
+			for (const preference of navigator.languages ?? [navigator.language]) {
+				const base = preference.split('-', 1)[0].toLowerCase();
+				if (base && available.includes(base)) {
+					userLang = base;
+					break;
+				}
+			}
 		} else {
-			this.translate.use(DEFAULT_LANGUAGE);
+			userLang = this.settings.lang;
 		}
+		this.translate.use(Object.keys(LANGUAGES).includes(userLang) ? userLang : DEFAULT_LANGUAGE);
 	}
 
 	toggleSound(): void {

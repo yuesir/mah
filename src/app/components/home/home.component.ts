@@ -38,7 +38,6 @@ type SortMode = 'default' | 'nameAsc' | 'nameDesc';
 })
 export class HomeComponent {
 	readonly startEvent = output<HomeStartEvent>();
-	readonly openSettingsEvent = output<void>();
 	readonly help = viewChild.required<DialogComponent>('help');
 	readonly tutorial = viewChild.required<DialogComponent>('tutorial');
 	readonly app = inject(AppService);

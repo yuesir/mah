@@ -30,12 +30,10 @@ button {
 .content-grid,
 .toolbar,
 .home-footer,
-.daily-head,
 .daily-body,
 .board-title-row,
 .board-stats,
-.brand-lockup,
-.top-actions {
+.brand-lockup {
 	display: flex;
 }
 
@@ -73,21 +71,6 @@ button {
 	line-height: 1;
 	text-shadow: 0 2px 0 #f4d6c8;
 	transform: rotate(-7deg);
-}
-
-.top-actions {
-	gap: 14px;
-
-	button {
-		width: 50px;
-		height: 50px;
-		border: 1px solid #eadfca;
-		border-radius: 12px;
-		background: #fffaf1;
-		color: #68432f;
-		font-size: 1.3rem;
-		box-shadow: 0 8px 18px rgb(92 64 34 / 10%);
-	}
 }
 
 .hero-row {
@@ -215,67 +198,78 @@ button {
 }
 
 .daily-card {
-	flex: 0 0 595px;
-	padding: 20px;
+	flex: 0 0 520px;
+	padding: 22px;
 	border-radius: 18px;
 	background: linear-gradient(135deg, #fffaf0, #f8ead0);
 }
 
 .daily-head {
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 12px;
-	font: 700 0.9rem "Trebuchet MS", sans-serif;
-
-	span {
-		color: #9c4a28;
-	}
+	margin-bottom: 16px;
+	font: 700 1rem "Trebuchet MS", sans-serif;
 }
 
 .daily-body {
-	gap: 20px;
+	gap: 22px;
 	align-items: stretch;
 }
 
 .daily-preview {
 	position: relative;
-	flex: 0 0 220px;
+	flex: 1 1 240px;
 	overflow: hidden;
 	padding: 0;
 	border: 0;
 	border-radius: 12px;
 	background: #173d3d;
+	min-height: 200px;
 
 	app-layout-preview {
 		display: block;
-		height: 155px;
-		padding: 12px 14px 42px;
+		height: 100%;
+		min-height: 200px;
+		padding: 16px 16px 50px;
 	}
 
 	span {
 		position: absolute;
 		inset: auto 0 0;
-		padding: 14px;
-		font: 900 1rem "Trebuchet MS", sans-serif;
+		padding: 16px;
+		font: 900 1.05rem "Trebuchet MS", sans-serif;
 	}
 }
 
 .daily-copy {
-	flex: 1;
-	padding-top: 8px;
+	flex: 0 0 200px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding-top: 4px;
 
 	h3 {
-		margin: 0 0 7px;
-		font-size: 1.55rem;
+		margin: 0 0 8px;
+		font-size: 1.6rem;
+	}
+
+	.stars-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.pill {
+		padding: 1px 6px;
+		min-height: 0;
+		font-size: 0.66rem;
 	}
 
 	p {
-		margin: 14px 0 5px;
-		font: 0.95rem "Trebuchet MS", sans-serif;
+		margin: 16px 0 6px;
+		font: 0.95rem/1.5 "Trebuchet MS", sans-serif;
 	}
 
 	strong {
-		font: 900 1rem "Trebuchet MS", sans-serif;
+		font: 900 1.15rem "Trebuchet MS", sans-serif;
 	}
 }
 
@@ -318,16 +312,6 @@ button {
 		background: #fff0e9;
 		border-color: #ee9c88;
 	}
-}
-
-.dragon-art {
-	display: grid;
-	place-items: center;
-	width: 128px;
-	font-size: 6rem;
-	font-weight: 900;
-	color: rgb(72 126 60 / 56%);
-	filter: drop-shadow(0 12px 9px rgb(122 87 45 / 18%));
 }
 
 .content-grid {
@@ -570,8 +554,8 @@ button {
 
 .board-grid {
 	display: grid;
-	grid-template-columns: repeat(5, minmax(150px, 1fr));
-	gap: 18px;
+	grid-template-columns: repeat(3, minmax(220px, 1fr));
+	gap: 22px;
 }
 
 .board-card {
@@ -593,8 +577,8 @@ button {
 
 .board-preview {
 	position: relative;
-	height: 140px;
-	padding: 12px;
+	height: 200px;
+	padding: 16px;
 	background: linear-gradient(135deg, #0f4445, #143733);
 
 	app-layout-preview {
@@ -643,7 +627,7 @@ button {
 }
 
 .board-info {
-	padding: 12px 14px 13px;
+	padding: 15px 16px 17px;
 	font-family: "Trebuchet MS", sans-serif;
 }
 
@@ -651,19 +635,19 @@ button {
 	align-items: center;
 	justify-content: space-between;
 	gap: 8px;
-	margin-bottom: 9px;
+	margin-bottom: 11px;
 
 	strong {
-		font-size: 1rem;
+		font-size: 1.1rem;
 		color: #1f2b20;
 	}
 }
 
 .board-stats {
 	align-items: center;
-	gap: 10px;
+	gap: 12px;
 	color: #6d604f;
-	font-size: 0.76rem;
+	font-size: 0.85rem;
 }
 
 .mini-stars {
@@ -675,15 +659,15 @@ button {
 }
 
 .view-list .board-grid {
-	grid-template-columns: repeat(2, minmax(260px, 1fr));
+	grid-template-columns: repeat(2, minmax(280px, 1fr));
 
 	.board-card {
 		display: grid;
-		grid-template-columns: 180px 1fr;
+		grid-template-columns: 240px 1fr;
 	}
 
 	.board-preview {
-		height: 118px;
+		height: 160px;
 	}
 }
 
@@ -768,7 +752,7 @@ button {
 	}
 
 	.board-grid {
-		grid-template-columns: repeat(3, minmax(170px, 1fr));
+		grid-template-columns: repeat(2, minmax(220px, 1fr));
 	}
 }
 

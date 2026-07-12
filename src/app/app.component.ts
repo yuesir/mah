@@ -83,11 +83,6 @@ export class AppComponent implements OnInit {
 		window.requestAnimationFrame(() => this.resetViewportScroll());
 	}
 
-	openHomeSettings(): void {
-		this.gameVisible = true;
-		this.gameComponent().settings().visible.set(true);
-	}
-
 	goHome(): void {
 		this.gameVisible = false;
 		this.resetViewportScroll();
