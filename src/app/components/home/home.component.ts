@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, output, signal, viewChild } from '@angular/core';
 import { MODE_SOLVABLE, type BUILD_MODE_ID } from '../../model/builder';
 import { GAME_MODE_STANDARD, type GAME_MODE_ID } from '../../model/consts';
 import type { Layout } from '../../model/types';
@@ -7,7 +7,10 @@ import { TranslateGroupPipe } from '../../pipes/translate-group.pipe';
 import { AppService } from '../../service/app.service';
 import { LayoutService } from '../../service/layout.service';
 import { LocalstorageService } from '../../service/localstorage.service';
+import { DialogComponent } from '../dialog/dialog.component';
+import { HelpComponent } from '../help/help.component';
 import { LayoutPreviewComponent } from '../layout-preview/layout-preview.component';
+import { TutorialComponent } from '../tutorial/tutorial.component';
 
 export interface HomeStartEvent {
 	layout: Layout;
@@ -31,12 +34,13 @@ type SortMode = 'default' | 'nameAsc' | 'nameDesc';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	templateUrl: './home.component.html',
 	styleUrls: ['./home.component.scss'],
-	imports: [DurationPipe, LayoutPreviewComponent, TranslateGroupPipe]
+	imports: [DurationPipe, HelpComponent, LayoutPreviewComponent, TranslateGroupPipe, DialogComponent, TutorialComponent]
 })
 export class HomeComponent {
 	readonly startEvent = output<HomeStartEvent>();
-	readonly openHelpEvent = output<void>();
 	readonly openSettingsEvent = output<void>();
+	readonly help = viewChild.required<DialogComponent>('help');
+	readonly tutorial = viewChild.required<DialogComponent>('tutorial');
 	readonly app = inject(AppService);
 	readonly layoutService = inject(LayoutService);
 	readonly storage = inject(LocalstorageService);
@@ -160,6 +164,21 @@ export class HomeComponent {
 		}
 		this.storage.storeLastPlayed(layout.id);
 		this.startEvent.emit({ layout, buildMode: MODE_SOLVABLE, gameMode: GAME_MODE_STANDARD });
+	}
+
+	openHelp(): void {
+		this.help().visible.set(true);
+	}
+
+	showTutorial(): void {
+		this.help().visible.set(false);
+		this.tutorial().visible.set(true);
+	}
+
+	completeTutorial(): void {
+		this.tutorial().visible.set(false);
+		this.app.settings.tutorialCompleted = true;
+		this.app.settings.save();
 	}
 
 	selectCategory(category: string): void {

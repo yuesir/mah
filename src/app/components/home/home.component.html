@@ -162,6 +162,21 @@
 
 	<footer class="home-footer">
 		<span>💡 Tip: Try Daily Challenge for extra XP and achievements!</span>
-		<button type="button" (click)="openHelpEvent.emit()">? How to Play</button>
+		<button type="button" (click)="openHelp()">? How to Play</button>
 	</footer>
 </main>
+
+<app-dialog #help (clickEvent)="help.toggle()" className="overlay-help overlay-size-auto" [title]="app.name">
+	@if (help.visible()) {
+		<app-help (showTutorial)="showTutorial()"/>
+	}
+</app-dialog>
+
+<app-dialog
+	#tutorial (clickEvent)="tutorial.toggle()" className="overlay-tutorial overlay-size-small"
+	[noCloseButton]="true" [allowCloseOverlay]="false" [title]="app.name"
+>
+	@if (tutorial.visible()) {
+		<app-tutorial (completed)="completeTutorial()"/>
+	}
+</app-dialog>

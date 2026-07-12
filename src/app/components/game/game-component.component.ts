@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, Injector, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Injector, output, viewChild } from '@angular/core';
 import type { Game } from '../../model/game';
 import type { Stone } from '../../model/stone';
 import type { Layout, Place } from '../../model/types';
@@ -108,6 +108,7 @@ export class GameComponent {
 	readonly help = viewChild.required<DialogComponent>('help');
 	readonly newgame = viewChild.required<DialogComponent>('newgame');
 	readonly tutorial = viewChild.required<DialogComponent>('tutorial');
+	readonly goHomeEvent = output<void>();
 	readonly app = inject(AppService);
 	readonly layoutService = inject(LayoutService);
 	game: Game;
@@ -153,6 +154,13 @@ export class GameComponent {
 		}
 		const confetti = new Confetti();
 		confetti.trigger();
+	}
+
+	goHome(): void {
+		if (this.game.isRunning()) {
+			this.game.pause();
+		}
+		this.goHomeEvent.emit();
 	}
 
 	toggleMenu(): void {

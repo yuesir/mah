@@ -83,14 +83,14 @@ export class AppComponent implements OnInit {
 		window.requestAnimationFrame(() => this.resetViewportScroll());
 	}
 
-	openHomeHelp(): void {
-		this.gameVisible = true;
-		this.gameComponent().help().visible.set(true);
-	}
-
 	openHomeSettings(): void {
 		this.gameVisible = true;
 		this.gameComponent().settings().visible.set(true);
+	}
+
+	goHome(): void {
+		this.gameVisible = false;
+		this.resetViewportScroll();
 	}
 
 	toggleEditor(): void {

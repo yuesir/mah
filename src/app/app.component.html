@@ -2,9 +2,8 @@
 	<app-home
 		[hidden]="loading || gameVisible"
 		(startEvent)="startHomeGame($event)"
-		(openHelpEvent)="openHomeHelp()"
 		(openSettingsEvent)="openHomeSettings()"
 	/>
-	<app-game-component #gameComponent [hidden]="loading || !gameVisible" [class]="'theme-'+app.settings.theme"/>
+	<app-game-component #gameComponent [hidden]="loading || !gameVisible" [class]="'theme-'+app.settings.theme" (goHomeEvent)="goHome()"/>
 }
 <ng-template #editorPlaceholder/>

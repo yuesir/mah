@@ -89,7 +89,7 @@
 @if (!zenMode) {
 	<div class="controls controls-top">
 		<div class="ctrl ctrl-name">
-			<button type="button" class="button" (click)="help.toggle()" title="{{'OPEN_HELP' | translate}}">
+			<button type="button" class="button" (click)="goHome()" title="{{'HOME' | translate}}" [attr.aria-label]="app.name">
 				<app-icon-logo/>
 				<span class="name">{{ app.name }}</span>
 			</button>
